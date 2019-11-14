@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">HW7</string>
+    <string name="tv_email">Email</string>
+    <string name="et_email" />
+    <string name="et_password" />
+    <string name="btn_login">Login</string>
+    <string name="btn_signUp">Sign Up</string>
+</resources>
