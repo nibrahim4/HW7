@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         btn_login = findViewById(R.id.btn_login);
-        btn_signUp = findViewById(R.id.b);
+        btn_signUp = findViewById(R.id.btn_newUser);
         et_email = findViewById(R.id.et_email);
         et_password = findViewById(R.id.et_password);
 
