@@ -3,6 +3,7 @@ package com.example.hw7;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -22,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
     public FirebaseAuth mAuth;
     public String TAG = "demo";
     public Button btn_login;
-    public Button btn_signUp;
+    public Button btn_newUser;
     public EditText et_email;
     public EditText et_password;
     public String email;
@@ -34,42 +35,18 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         btn_login = findViewById(R.id.btn_login);
-        btn_signUp = findViewById(R.id.btn_newUser);
+        btn_newUser = findViewById(R.id.btn_newUser);
         et_email = findViewById(R.id.et_email);
         et_password = findViewById(R.id.et_password);
 
         // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
 
-        btn_signUp.setOnClickListener(new View.OnClickListener() {
+        btn_newUser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                email = et_email.getText().toString();
-                password = et_password.getText().toString();
-
-                Log.d(TAG, "email " + email);
-                Log.d(TAG, "password " + password);
-                mAuth.createUserWithEmailAndPassword(email, password)
-                        .addOnCompleteListener( new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                if (task.isSuccessful()) {
-                                    // Sign in success, update UI with the signed-in user's information
-                                    Log.d(TAG, "createUserWithEmail:success");
-                                    FirebaseUser user = mAuth.getCurrentUser();
-                                    Toast.makeText(MainActivity.this, "Sign up was successful.",
-                                            Toast.LENGTH_SHORT).show();
-                                    //updateUI(user);
-                                } else {
-                                    // If sign in fails, display a message to the user.
-                                    Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                                    Toast.makeText(MainActivity.this, "Authentication failed.",
-                                     Toast.LENGTH_SHORT).show();
-                                    //updateUI(null);
-                                }
-
-                            }
-                        });
+                Intent intentToSignUp = new Intent(MainActivity.this, SignUpActivity.class);
+                startActivity(intentToSignUp);
             }
         });
         btn_login.setOnClickListener(new View.OnClickListener() {

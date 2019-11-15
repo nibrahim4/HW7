@@ -13,4 +13,6 @@
     <string name="btn_newUser">New User</string>
     <string name="rb_female">Female</string>
     <string name="rb_male">Male</string>
+    <string name="tv_newUser_email">Email</string>
+    <string name="et_newUser_email" />
 </resources>
