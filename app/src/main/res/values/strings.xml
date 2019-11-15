@@ -6,4 +6,11 @@
     <string name="btn_login">Login</string>
     <string name="btn_signUp">Sign Up</string>
     <string name="tv_password">Password</string>
+    <string name="tv_firstName">First Name</string>
+    <string name="et_firstName" />
+    <string name="tv_lastName">Last Name</string>
+    <string name="et_lastName" />
+    <string name="btn_newUser">New User</string>
+    <string name="rb_female">Female</string>
+    <string name="rb_male">Male</string>
 </resources>
