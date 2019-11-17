@@ -12,22 +12,22 @@
         android:layout_width="105dp"
         android:layout_height="43dp"
         android:layout_marginStart="52dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="34dp"
         android:text="@string/tv_firstName"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView" />
+        app:layout_constraintTop_toBottomOf="@+id/iv_selectAvatar" />
 
     <EditText
         android:id="@+id/et_firstName"
         android:layout_width="215dp"
         android:layout_height="38dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="34dp"
         android:layout_marginEnd="28dp"
         android:ems="10"
         android:inputType="textPersonName"
         android:text="@string/et_firstName"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView" />
+        app:layout_constraintTop_toBottomOf="@+id/iv_selectAvatar" />
 
     <TextView
         android:id="@+id/tv_lastName"
@@ -80,22 +80,12 @@
         android:id="@+id/btn_signUp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="272dp"
+        android:layout_marginTop="32dp"
         android:text="@string/btn_signUp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.486"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/radioGroup" />
-
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:srcCompat="@tools:sample/avatars[0]" />
+        app:layout_constraintTop_toBottomOf="@+id/et_newUser_password" />
 
     <TextView
         android:id="@+id/tv_newUser_email"
@@ -139,4 +129,14 @@
         android:inputType="textPassword"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/et_newUser_email" />
+
+    <ImageView
+        android:id="@+id/iv_selectAvatar"
+        android:layout_width="142dp"
+        android:layout_height="125dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/select_image" />
 </androidx.constraintlayout.widget.ConstraintLayout>
