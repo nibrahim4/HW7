@@ -71,6 +71,7 @@ public class SignUpActivity extends AppCompatActivity {
     public StorageReference storageReference = firebaseStorage.getReference();
     public String selectedAvatarFileName;
     public User newUser = new User();
+    public String url ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -138,7 +139,7 @@ public class SignUpActivity extends AppCompatActivity {
                                     Toast.makeText(SignUpActivity.this, "Sign up was successful.",
                                             Toast.LENGTH_SHORT).show();
 
-                                    User newUser = new User(userId, firstName, lastName,email, selectedGender, null );
+                                    User newUser = new User(userId, firstName, lastName,email, selectedGender, null,null );
                                     addUserToDb(newUser);
                                 } else {
                                     // If sign in fails, display a message to the user.
@@ -159,6 +160,15 @@ public class SignUpActivity extends AppCompatActivity {
         Map<String, Object> userMap = new HashMap<>();
         userMap.put("userId", newUser.userId);
         userMap.put("firstName", newUser.firstName);
+        userMap.put("lastName", newUser.lastName);
+        userMap.put("email", newUser.emailAddress);
+        userMap.put("gender", newUser.gender);
+        userMap.put("url", url);
+
+        Bitmap bMap = BitmapFactory.decodeResource(getResources(), R.drawable.avatar_f_1);
+        uploadImage(bMap);
+        Intent intentToDashboard = new Intent(SignUpActivity.this, DashboardActivity.class);
+        startActivity(intentToDashboard);
 
         //User user = new  User(userMap);
         db.collection("users").document(userId)
@@ -166,8 +176,7 @@ public class SignUpActivity extends AppCompatActivity {
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        Bitmap bMap = BitmapFactory.decodeResource(getResources(), R.drawable.avatar_f_1);
-                        uploadImage(bMap);
+
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -251,7 +260,7 @@ public class SignUpActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<Uri> task) {
                 if (task.isSuccessful()) {
                     Log.d(TAG, "Image Download URL" + task.getResult());
-                    String imageURL = task.getResult().toString();
+                    url = task.getResult().toString();
 
 
 //                    image.url = imageURL;

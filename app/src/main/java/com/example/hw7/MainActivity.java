@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        setTitle("Login");
 
         btn_login = findViewById(R.id.btn_login);
         btn_newUser = findViewById(R.id.btn_newUser);
@@ -66,13 +67,13 @@ public class MainActivity extends AppCompatActivity {
                                     FirebaseUser user = mAuth.getCurrentUser();
                                     Toast.makeText(MainActivity.this, "Authentication successful.",
                                             Toast.LENGTH_SHORT).show();
-                                    //updateUI(user);
+                                    Intent intentToDashboard = new Intent(MainActivity.this, DashboardActivity.class);
+                                    startActivity(intentToDashboard);
                                 } else {
                                     // If sign in fails, display a message to the user.
                                     Log.w(TAG, "signInWithEmail:failure", task.getException());
                                     Toast.makeText(MainActivity.this, "Authentication failed.",
                                             Toast.LENGTH_SHORT).show();
-                                    //updateUI(null);
                                 }
 
                                 // ...

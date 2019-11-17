@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/tv_user_firstName"
+        android:layout_width="171dp"
+        android:layout_height="46dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="29dp"
+        android:layout_marginTop="42dp"
+        android:text="@string/tv_userFirstName" />
+
+    <TextView
+        android:id="@+id/tv_user_lastName"
+        android:layout_width="173dp"
+        android:layout_height="42dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="46dp"
+        android:layout_marginEnd="13dp"
+        android:text="@string/tv_user_lastName" />
+
+    <ImageView
+        android:id="@+id/iv_user_avatar"
+        android:layout_width="164dp"
+        android:layout_height="112dp"
+        android:layout_below="@+id/tv_user_firstName"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="18dp"
+        app:srcCompat="@mipmap/ic_launcher" />
+
+    <TextView
+        android:id="@+id/tv_user_gender"
+        android:layout_width="165dp"
+        android:layout_height="43dp"
+        android:layout_below="@+id/tv_user_lastName"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="25dp"
+        android:layout_marginEnd="19dp"
+        android:text="@string/tv_user_gender" />
+
+    <TextView
+        android:id="@+id/tv_user_email"
+        android:layout_width="160dp"
+        android:layout_height="48dp"
+        android:layout_below="@+id/tv_user_gender"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="22dp"
+        android:text="@string/tv_user_email" />
+</RelativeLayout>

@@ -18,4 +18,9 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="tv_userFirstName" />
+    <string name="btn_ListOfUsers">List of Users</string>
+    <string name="tv_user_lastName" />
+    <string name="tv_user_gender" />
+    <string name="tv_user_email" />
 </resources>
