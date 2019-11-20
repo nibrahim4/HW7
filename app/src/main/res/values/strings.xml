@@ -30,4 +30,8 @@
     <string name="et_title">Title</string>
     <string name="tv_description">Description:</string>
     <string name="btn_submit">Submit</string>
+    <string name="tv_description_trips" />
+    <string name="tv_dates" />
+    <string name="tv_address" />
+    <string name="title_activity_maps">Map</string>
 </resources>
