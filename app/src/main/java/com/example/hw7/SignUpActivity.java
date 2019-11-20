@@ -170,7 +170,6 @@ public class SignUpActivity extends AppCompatActivity {
         Intent intentToDashboard = new Intent(SignUpActivity.this, DashboardActivity.class);
         startActivity(intentToDashboard);
 
-        //User user = new  User(userMap);
         db.collection("users").document(userId)
             .set(userMap)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {

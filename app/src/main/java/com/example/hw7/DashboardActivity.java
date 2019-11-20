@@ -10,6 +10,7 @@ import android.widget.Button;
 public class DashboardActivity extends AppCompatActivity {
 
     public Button btn_listOfUsers;
+    public Button btn_addTrip;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -22,6 +23,15 @@ public class DashboardActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intentToUsers = new Intent(DashboardActivity.this, UsersActivity.class);
                 startActivity(intentToUsers);
+            }
+        });
+
+        btn_addTrip = findViewById(R.id.btn_addTrip);
+        btn_addTrip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intentToAddTrip = new Intent(DashboardActivity.this, AddTripActivity.class);
+                startActivity(intentToAddTrip);
             }
         });
     }
