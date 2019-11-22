@@ -41,9 +41,9 @@ public class TripAdapter extends ArrayAdapter<Trip> {
 
         TextView tv_title_trips = convertView.findViewById(R.id.tv_title_trips);
         tv_title_trips.setText(trip.getTitle());
-//
-//        TextView tv_lastName = convertView.findViewById(R.id.tv_user_lastName);
-//        tv_lastName.setText(user.lastName);
+
+        TextView tv_description_trips = convertView.findViewById(R.id.tv_description_trips);
+        tv_description_trips.setText(trip.getDescription());
 //
 //        TextView tv_gender = convertView.findViewById(R.id.tv_user_gender);
 //        tv_gender.setText(user.gender);
