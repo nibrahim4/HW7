@@ -1,6 +1,7 @@
 package com.example.hw7;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,14 +9,16 @@ import java.util.Map;
 public class Trip {
 
     public String _userId, _tripId, _title, _description;
+    public Date _date;
     public ArrayList<User> _friends = new ArrayList<>();
 
-    public Trip(String userId, String tripId, String title, String description, ArrayList<User> friends) {
+    public Trip(String userId, String tripId, String title, String description, ArrayList<User> friends, Date date) {
         this._userId = userId;
         this._tripId = tripId;
         this._title = title;
         this._description = description;
         this._friends = friends;
+        this._date = date;
     }
 
     public Trip (Map tripMap) {
@@ -25,6 +28,7 @@ public class Trip {
         this._title = (String) tripMap.get("_title");
         this._description = (String) tripMap.get("_description");
         this._friends = (ArrayList<User>) tripMap.get("_friends");
+        this._date = (Date) tripMap.get("_date");
     }
 
     public String getUserId() {
@@ -41,6 +45,14 @@ public class Trip {
 
     public void setTripId(String tripId) {
         this._tripId = tripId;
+    }
+
+    public Date get_date() {
+        return _date;
+    }
+
+    public void set_date(Date _date) {
+        this._date = _date;
     }
 
     public void setTitle(String title) {

@@ -30,6 +30,7 @@ import com.google.firebase.firestore.util.Util;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -72,6 +73,7 @@ public class AddTripActivity extends AppCompatActivity {
     public EditText et_title;
     public EditText et_description;
     public Button btn_submit;
+    public EditText et_date;
 
     public FirebaseAuth mAuth;
     public String userId;
@@ -131,6 +133,7 @@ public class AddTripActivity extends AppCompatActivity {
         et_title = findViewById(R.id.et_title);
         et_description = findViewById(R.id.et_descrption);
         btn_submit = findViewById(R.id.btn_submit);
+        et_date = findViewById(R.id.et_date);
 
         // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
@@ -140,11 +143,15 @@ public class AddTripActivity extends AppCompatActivity {
 
         tripId = UUID.randomUUID().toString();
 
+
+
         btn_submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Date date = new Date(et_date.getText().toString());
+
                 Trip trip = new Trip(userId, tripId, et_title.getText().toString(),
-                        et_description.getText().toString(), selectedUsers);
+                        et_description.getText().toString(), selectedUsers, date);
                 db.collection("trips").document(tripId).set(trip);
                 finish();
             }
