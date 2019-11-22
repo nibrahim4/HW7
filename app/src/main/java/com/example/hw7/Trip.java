@@ -1,49 +1,58 @@
 package com.example.hw7;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Trip {
 
-    public String userId, tripId, title, description;
-    public ArrayList<User> friends = new ArrayList<>();
+    public String _userId, _tripId, _title, _description;
+    public ArrayList<User> _friends = new ArrayList<>();
+
+    public Trip(String userId, String tripId, String title, String description, ArrayList<User> friends) {
+        this._userId = userId;
+        this._tripId = tripId;
+        this._title = title;
+        this._description = description;
+        this._friends = friends;
+    }
 
     public String getUserId() {
-        return userId;
+        return _userId;
     }
 
     public String getTripId() {
-        return tripId;
+        return _tripId;
     }
 
     public void setUserId(String userId) {
-        this.userId = userId;
+        this._userId = userId;
     }
 
     public void setTripId(String tripId) {
-        this.tripId = tripId;
+        this._tripId = tripId;
     }
 
     public void setTitle(String title) {
-        this.title = title;
+        this._title = title;
     }
 
     public void setDescription(String description) {
-        this.description = description;
+        this._description = description;
     }
 
     public void setFriends(ArrayList<User> friends) {
-        this.friends = friends;
+        this._friends = friends;
     }
 
     public String getTitle() {
-        return title;
+        return _title;
     }
 
     public String getDescription() {
-        return description;
+        return _description;
     }
 
     public ArrayList<User> getFriends() {
-        return friends;
+        return _friends;
     }
 }

@@ -152,20 +152,25 @@ public class AddTripActivity extends AppCompatActivity {
 //                for (int i=0; i<selectedUsers.size(); i++){
 //                    tripMap.put("friends", (User) selectedUsers.get(i));
                // }
-                db.collection("trips").document(tripId)
-                        .set(tripMap)
-                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
 
-                            }
-                        })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
+                Trip trip = new Trip( userId, tripId, et_title.getText().toString(),
+                        et_description.getText().toString(), selectedUsers);
+                db.collection("trips").document(tripId).set(trip);
 
-                            }
-                        });
+//                db.collection("trips").document(tripId)
+//                        .set(tripMap)
+//                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+//                            @Override
+//                            public void onSuccess(Void aVoid) {
+//
+//                            }
+//                        })
+//                        .addOnFailureListener(new OnFailureListener() {
+//                            @Override
+//                            public void onFailure(@NonNull Exception e) {
+//
+//                            }
+//                        });
                 }
             //}
         });
