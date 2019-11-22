@@ -143,36 +143,12 @@ public class AddTripActivity extends AppCompatActivity {
         btn_submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Map<String, Object> tripMap = new HashMap<>();
-                tripMap.put("userId", userId);
-                tripMap.put("tripId", tripId);
-                tripMap.put("title", et_title.getText().toString());
-                tripMap.put("description", et_description.getText().toString());
-                tripMap.put("friends", Arrays.asList(selectedUsers));
-//                for (int i=0; i<selectedUsers.size(); i++){
-//                    tripMap.put("friends", (User) selectedUsers.get(i));
-               // }
-
-                Trip trip = new Trip( userId, tripId, et_title.getText().toString(),
+                Trip trip = new Trip(userId, tripId, et_title.getText().toString(),
                         et_description.getText().toString(), selectedUsers);
                 db.collection("trips").document(tripId).set(trip);
+                finish();
+            }
 
-//                db.collection("trips").document(tripId)
-//                        .set(tripMap)
-//                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-//                            @Override
-//                            public void onSuccess(Void aVoid) {
-//
-//                            }
-//                        })
-//                        .addOnFailureListener(new OnFailureListener() {
-//                            @Override
-//                            public void onFailure(@NonNull Exception e) {
-//
-//                            }
-//                        });
-                }
-            //}
         });
 
     }

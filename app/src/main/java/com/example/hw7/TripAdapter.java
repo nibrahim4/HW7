@@ -36,11 +36,11 @@ public class TripAdapter extends ArrayAdapter<Trip> {
         Trip trip = getItem(position);
 
         if (convertView == null) {
-            convertView = LayoutInflater.from(getContext()).inflate(R.layout.user_item, parent, false);
+            convertView = LayoutInflater.from(getContext()).inflate(R.layout.trip_item, parent, false);
         }
 
-//        TextView tv_firstName = convertView.findViewById(R.id.tv_user_firstName);
-//        tv_firstName.setText(user.firstName);
+        TextView tv_title_trips = convertView.findViewById(R.id.tv_title_trips);
+        tv_title_trips.setText(trip.getTitle());
 //
 //        TextView tv_lastName = convertView.findViewById(R.id.tv_user_lastName);
 //        tv_lastName.setText(user.lastName);

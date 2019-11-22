@@ -11,6 +11,7 @@ public class DashboardActivity extends AppCompatActivity {
 
     public Button btn_listOfUsers;
     public Button btn_addTrip;
+    public Button btn_viewTrips;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,6 +33,15 @@ public class DashboardActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intentToAddTrip = new Intent(DashboardActivity.this, AddTripActivity.class);
                 startActivity(intentToAddTrip);
+            }
+        });
+
+        btn_viewTrips = findViewById(R.id.btn_trips);
+        btn_viewTrips.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intentToViewTrip = new Intent(DashboardActivity.this, ViewTripsActivity.class);
+                startActivity(intentToViewTrip);
             }
         });
     }
