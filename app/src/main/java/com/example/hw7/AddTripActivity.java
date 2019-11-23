@@ -7,12 +7,15 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.app.AlertDialog;
+import android.app.Instrumentation;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -21,6 +24,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -74,10 +78,11 @@ public class AddTripActivity extends AppCompatActivity {
     public EditText et_description;
     public Button btn_submit;
     public EditText et_date;
-
+    public ImageView iv_coverPhoto;
     public FirebaseAuth mAuth;
     public String userId;
     public String tripId;
+    public int REQ_CODE = 5;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -134,6 +139,16 @@ public class AddTripActivity extends AppCompatActivity {
         et_description = findViewById(R.id.et_descrption);
         btn_submit = findViewById(R.id.btn_submit);
         et_date = findViewById(R.id.et_date);
+        iv_coverPhoto = findViewById(R.id.iv_coverPhoto);
+
+
+        iv_coverPhoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intentToCoverPhoto = new Intent(AddTripActivity.this, CoverPhotoLibrary.class);
+                startActivityForResult(intentToCoverPhoto, REQ_CODE);
+            }
+        });
 
         // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
@@ -144,14 +159,14 @@ public class AddTripActivity extends AppCompatActivity {
         tripId = UUID.randomUUID().toString();
 
 
-
         btn_submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Date date = new Date(et_date.getText().toString());
+                Date date = (Date) et_date.getText();
+                Timestamp ts = new Timestamp(date);
 
                 Trip trip = new Trip(userId, tripId, et_title.getText().toString(),
-                        et_description.getText().toString(), selectedUsers, date);
+                        et_description.getText().toString(), selectedUsers, ts);
                 db.collection("trips").document(tripId).set(trip);
                 finish();
             }
@@ -189,5 +204,32 @@ public class AddTripActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // Check which request we're responding to
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.d(TAG, "onActivityResult: " + data);
+        if (requestCode == REQ_CODE) {
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK) {
+                if (data.getExtras().getSerializable("coverPhoto").equals("alaska")) {
+                    iv_coverPhoto.setImageResource(R.drawable.alaska);
+                } else if (data.getExtras().getSerializable("coverPhoto").equals("borabora")) {
+                    iv_coverPhoto.setImageResource(R.drawable.borabora);
+                } else if (data.getExtras().getSerializable("coverPhoto").equals("cappadocia")) {
+                    iv_coverPhoto.setImageResource(R.drawable.cappadocia);
+                } else if (data.getExtras().getSerializable("coverPhoto").equals("cavin")) {
+                    iv_coverPhoto.setImageResource(R.drawable.cavin);
+                } else if (data.getExtras().getSerializable("coverPhoto").equals("colombia")) {
+                    iv_coverPhoto.setImageResource(R.drawable.colombia);
+                } else if (data.getExtras().getSerializable("coverPhoto").equals("grandCanyon")) {
+                    iv_coverPhoto.setImageResource(R.drawable.grandcanyonofthecoloradoar);
+                } else if (data.getExtras().getSerializable("coverPhoto").equals("snowboard")) {
+                    iv_coverPhoto.setImageResource(R.drawable.snowboard);
+                }
+            }
+        }
     }
 }

@@ -19,7 +19,7 @@
             android:layout_height="121dp"
             android:layout_alignParentTop="true"
             android:layout_marginTop="73dp"
-            app:srcCompat="@drawable/Alaska" />
+            app:srcCompat="@drawable/alaska" />
 
         <ImageView
             android:id="@+id/iv_borabora"
@@ -29,7 +29,7 @@
             android:layout_alignParentEnd="true"
             android:layout_marginTop="213dp"
             android:layout_marginEnd="8dp"
-            app:srcCompat="@drawable/BoraBora" />
+            app:srcCompat="@drawable/borabora" />
 
         <ImageView
             android:id="@+id/iv_cappadocia"
@@ -40,7 +40,7 @@
             android:layout_marginStart="-4dp"
             android:layout_marginTop="211dp"
             android:textAlignment="center"
-            app:srcCompat="@drawable/Cappadocia" />
+            app:srcCompat="@drawable/cappadocia" />
 
         <ImageView
             android:id="@+id/iv_calvin"
@@ -54,7 +54,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/Cavin" />
+            app:srcCompat="@drawable/cavin" />
 
         <ImageView
             android:id="@+id/iv_colombia"
@@ -64,7 +64,7 @@
             android:layout_alignParentBottom="true"
             android:layout_marginEnd="18dp"
             android:layout_marginBottom="28dp"
-            app:srcCompat="@drawable/Colombia" />
+            app:srcCompat="@drawable/colombia" />
 
         <ImageView
             android:id="@+id/iv_grandCanyon"
@@ -72,7 +72,7 @@
             android:layout_height="131dp"
             android:layout_alignParentBottom="true"
             android:layout_marginBottom="18dp"
-            app:srcCompat="@drawable/GrandCanyonoftheColorado_AR" />
+            app:srcCompat="@drawable/grandcanyonofthecoloradoar" />
 
         <ImageView
             android:id="@+id/iv_snowBoard"
@@ -82,6 +82,6 @@
             android:layout_alignParentTop="true"
             android:layout_marginStart="-2dp"
             android:layout_marginTop="392dp"
-            app:srcCompat="@drawable/SnowBoard" />
+            app:srcCompat="@drawable/snowboard" />
     </RelativeLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,5 +1,7 @@
 package com.example.hw7;
 
+import com.google.firebase.Timestamp;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -9,10 +11,10 @@ import java.util.Map;
 public class Trip {
 
     public String _userId, _tripId, _title, _description;
-    public Date _date;
+    public Timestamp _date;
     public ArrayList<User> _friends = new ArrayList<>();
 
-    public Trip(String userId, String tripId, String title, String description, ArrayList<User> friends, Date date) {
+    public Trip(String userId, String tripId, String title, String description, ArrayList<User> friends, Timestamp date) {
         this._userId = userId;
         this._tripId = tripId;
         this._title = title;
@@ -28,7 +30,7 @@ public class Trip {
         this._title = (String) tripMap.get("_title");
         this._description = (String) tripMap.get("_description");
         this._friends = (ArrayList<User>) tripMap.get("_friends");
-        this._date = (Date) tripMap.get("_date");
+        this._date = (Timestamp) tripMap.get("_date");
     }
 
     public String getUserId() {
@@ -47,11 +49,11 @@ public class Trip {
         this._tripId = tripId;
     }
 
-    public Date get_date() {
+    public Timestamp get_date() {
         return _date;
     }
 
-    public void set_date(Date _date) {
+    public void set_date(Timestamp _date) {
         this._date = _date;
     }
 
