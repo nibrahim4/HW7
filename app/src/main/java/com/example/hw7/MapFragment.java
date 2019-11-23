@@ -5,15 +5,22 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
+import android.location.Location;
+import android.location.LocationListener;
 import android.os.Bundle;
 
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -22,13 +29,24 @@ import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.firebase.firestore.GeoPoint;
+import com.google.protobuf.DescriptorProtos;
+
+import java.util.ArrayList;
 
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MapFragment extends Fragment {
+public class MapFragment extends Fragment  {
+
+    public ArrayList<LatLng> latLngArrayList = new ArrayList<>();
+    public LatLng selectedLatLng;
+    public String selectedTripLocation;
 
     public MapFragment() {
         // Required empty public constructor
@@ -54,43 +72,110 @@ public class MapFragment extends Fragment {
 
                 mMap.clear(); //clear old markers
 
-                CameraPosition googlePlex = CameraPosition.builder()
-                        .target(new LatLng(37.4219999,-122.0862462))
-                        .zoom(10)
-                        .bearing(0)
-                        .tilt(45)
-                        .build();
-
-                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(googlePlex), 10000, null);
-
+                // San Francisco, CA
+                LatLng sanFranCoor = new LatLng(37.7749, -122.4194);
+                latLngArrayList.add(sanFranCoor);
                 mMap.addMarker(new MarkerOptions()
-                        .position(new LatLng(37.4219999, -122.0862462))
-                        .title("Spider Man")
-                        .icon(bitmapDescriptorFromVector(getActivity(),R.drawable.common_google_signin_btn_icon_dark)));
+                        .position(sanFranCoor)
+                       // .icon(bitmapDescriptorFromVector(getActivity(),R.drawable.common_google_signin_btn_icon_dark))
+                        .title("San Francisco, CA"))
+                        .setTag("San Francisco");
 
+                // New York, NY
+                LatLng newYorkCoor = new LatLng(40.7128, -74.0060);
+                latLngArrayList.add(newYorkCoor);
                 mMap.addMarker(new MarkerOptions()
-                        .position(new LatLng(37.4629101,-122.2449094))
-                        .title("Iron Man")
-                        .snippet("His Talent : Plenty of money"));
+                        .position(newYorkCoor)
+                        .title("New York, NY"))
+                        .setTag("New York");
 
+                // Atlanta, GA
+                LatLng atlCoor = new LatLng(33.7490, -84.3880);
+                latLngArrayList.add(newYorkCoor);
                 mMap.addMarker(new MarkerOptions()
-                        .position(new LatLng(37.3092293,-122.1136845))
-                        .title("Captain America"));
+                        .position(atlCoor)
+                        .title("Atlanta, GA"))
+                        .setTag("Atlanta");
+
+                // Charlotte, NC
+                LatLng charCoor = new LatLng( 35.2271,-80.8431);
+                latLngArrayList.add(charCoor);
+                mMap.addMarker(new MarkerOptions()
+                        .position(charCoor)
+                        .title("Charlotte, NC"))
+                        .setTag("Charlotte");
+
+                // Los Angeles, CA
+                LatLng laxCoor = new LatLng( 34.0522,-118.2437);
+                latLngArrayList.add(charCoor);
+                mMap.addMarker(new MarkerOptions()
+                        .position(laxCoor)
+                        .title("Los Angeles, CA"))
+                        .setTag("Los Angeles");
+
+                // Chicago, IL
+                LatLng chiCoor = new LatLng( 41.8781,-87.6298);
+                latLngArrayList.add(chiCoor);
+                mMap.addMarker(new MarkerOptions()
+                        .position(chiCoor)
+                        .title("Chicago, IL"))
+                        .setTag("Chicago");
+
+                // Miami, FL
+                LatLng miamiCoor = new LatLng( 25.7617,-80.1918);
+                latLngArrayList.add(miamiCoor);
+                mMap.addMarker(new MarkerOptions()
+                        .position(miamiCoor)
+                        .title("Miami, FL"))
+                        .setTag("Miami");
+
+                LatLngBounds.Builder latlngbuilder = new LatLngBounds.Builder();
+                for (LatLng latLng : latLngArrayList) {
+                    latlngbuilder.include(latLng);
+                }
+
+                LatLngBounds bounds = latlngbuilder.build();
+                mMap.setLatLngBoundsForCameraTarget(bounds);
+                mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds,20));
+
+                mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                    @Override
+                    public boolean onMarkerClick(Marker marker) {
+
+                        switch (marker.getTag().toString()){
+                            case "Atlanta":
+                                selectedTripLocation = "Atlanta, GA";
+                                break;
+                            case "New York":
+                                selectedTripLocation = "New York, NY";
+                                break;
+                            case "Chicago":
+                                selectedTripLocation = "Chicago, IL";
+                                break;
+                            case "Miami":
+                                selectedTripLocation = "Miami, FL";
+                                break;
+                            case "Charlotte":
+                                selectedTripLocation = "Charlotte, NC";
+                                break;
+                            case "Los Angeles":
+                                selectedTripLocation = "Los Angeles, LA";
+                                break;
+                            case "San Francisco":
+                                selectedTripLocation = "San Francisco, CA";
+                                break;
+                            default:
+                                break;
+                        }
+
+                        selectedLatLng = marker.getPosition();
+                        return false;
+                    }
+                });
             }
         });
 
 
         return rootView;
     }
-
-    private BitmapDescriptor bitmapDescriptorFromVector(Context context, int vectorResId) {
-        Drawable vectorDrawable = ContextCompat.getDrawable(context, vectorResId);
-        vectorDrawable.setBounds(0, 0, vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight());
-        Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-        vectorDrawable.draw(canvas);
-        return BitmapDescriptorFactory.fromBitmap(bitmap);
-    }
-
-
 }

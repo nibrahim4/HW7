@@ -12,6 +12,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -28,6 +29,7 @@ import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.util.Util;
@@ -40,33 +42,6 @@ import java.util.Map;
 import java.util.UUID;
 
 public class AddTripActivity extends AppCompatActivity {
-
-
-//
-//    @Override
-//    protected void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        setContentView(R.layout.activity_add_trip);
-
-//
-
-//
-////        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-////                .findFragmentById(R.id.map);
-////        mapFragment.getMapAsync((OnMapReadyCallback) this);
-//
-//    }
-//
-//    @Override
-//    public void onMapReady(GoogleMap googleMap) {
-//
-//    }
-//
-//    @Override
-//    public void onPointerCaptureChanged(boolean hasCapture) {
-//
-//    }
-
     public Button btn_AddFriends;
     public ArrayList<User> users = new ArrayList<User>();
     public String TAG = "demo";
