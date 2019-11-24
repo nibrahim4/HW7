@@ -37,4 +37,6 @@
     <string name="hint_date">Enter Date</string>
     <string name="btn_addFriends">Add Friends</string>
     <string name="tv_title_trips" />
+    <string name="btn_editProfile">Edit Profile</string>
+    <string name="btn_updateProfile">Update Profile</string>
 </resources>

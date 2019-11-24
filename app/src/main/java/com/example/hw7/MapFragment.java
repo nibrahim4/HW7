@@ -9,6 +9,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
@@ -42,11 +43,13 @@ import java.util.ArrayList;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MapFragment extends Fragment  {
+public class MapFragment extends Fragment {
 
     public ArrayList<LatLng> latLngArrayList = new ArrayList<>();
     public LatLng selectedLatLng;
     public String selectedTripLocation;
+    private MapFragment.OnFragmentInteractionListener mListener;
+
 
     public MapFragment() {
         // Required empty public constructor
@@ -56,6 +59,12 @@ public class MapFragment extends Fragment  {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+            mListener = (MapFragment.OnFragmentInteractionListener) context;
     }
 
     @Override
@@ -77,7 +86,6 @@ public class MapFragment extends Fragment  {
                 latLngArrayList.add(sanFranCoor);
                 mMap.addMarker(new MarkerOptions()
                         .position(sanFranCoor)
-                       // .icon(bitmapDescriptorFromVector(getActivity(),R.drawable.common_google_signin_btn_icon_dark))
                         .title("San Francisco, CA"))
                         .setTag("San Francisco");
 
@@ -145,24 +153,31 @@ public class MapFragment extends Fragment  {
                         switch (marker.getTag().toString()){
                             case "Atlanta":
                                 selectedTripLocation = "Atlanta, GA";
+                                mListener.goToPreviousFragment(selectedTripLocation, marker.getPosition().latitude, marker.getPosition().longitude);
                                 break;
                             case "New York":
                                 selectedTripLocation = "New York, NY";
+                                mListener.goToPreviousFragment(selectedTripLocation, marker.getPosition().latitude, marker.getPosition().longitude);
                                 break;
                             case "Chicago":
                                 selectedTripLocation = "Chicago, IL";
+                                mListener.goToPreviousFragment(selectedTripLocation, marker.getPosition().latitude, marker.getPosition().longitude);
                                 break;
                             case "Miami":
                                 selectedTripLocation = "Miami, FL";
+                                mListener.goToPreviousFragment(selectedTripLocation, marker.getPosition().latitude, marker.getPosition().longitude);
                                 break;
                             case "Charlotte":
                                 selectedTripLocation = "Charlotte, NC";
+                                mListener.goToPreviousFragment(selectedTripLocation, marker.getPosition().latitude, marker.getPosition().longitude);
                                 break;
                             case "Los Angeles":
-                                selectedTripLocation = "Los Angeles, LA";
+                                selectedTripLocation = "Los Angeles, CA";
+                                mListener.goToPreviousFragment(selectedTripLocation, marker.getPosition().latitude, marker.getPosition().longitude);
                                 break;
                             case "San Francisco":
                                 selectedTripLocation = "San Francisco, CA";
+                                mListener.goToPreviousFragment(selectedTripLocation, marker.getPosition().latitude, marker.getPosition().longitude);
                                 break;
                             default:
                                 break;
@@ -177,5 +192,10 @@ public class MapFragment extends Fragment  {
 
 
         return rootView;
+    }
+
+    public interface OnFragmentInteractionListener {
+
+        void goToPreviousFragment(String selectedLocation, double latitude, double longitude);
     }
 }

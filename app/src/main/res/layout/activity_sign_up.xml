@@ -77,7 +77,7 @@
     </RadioGroup>
 
     <Button
-        android:id="@+id/btn_signUp"
+        android:id="@+id/btn_edit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"

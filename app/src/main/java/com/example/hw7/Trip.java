@@ -10,17 +10,29 @@ import java.util.Map;
 
 public class Trip {
 
-    public String _userId, _tripId, _title, _description;
-    public Timestamp _date;
+    public String _userId, _tripId, _title, _description, _city;
+    public String _date;
+    public long _latitude, _longitude;
     public ArrayList<User> _friends = new ArrayList<>();
 
-    public Trip(String userId, String tripId, String title, String description, ArrayList<User> friends, Timestamp date) {
+    public Trip(String userId,
+                String tripId,
+                String title,
+                String description,
+                ArrayList<User> friends,
+                String date,
+                String city,
+                long latitude,
+                long longitude) {
         this._userId = userId;
         this._tripId = tripId;
         this._title = title;
         this._description = description;
         this._friends = friends;
         this._date = date;
+        this._city = city;
+        this._latitude = latitude;
+        this._longitude = longitude;
     }
 
     public Trip (Map tripMap) {
@@ -30,7 +42,10 @@ public class Trip {
         this._title = (String) tripMap.get("_title");
         this._description = (String) tripMap.get("_description");
         this._friends = (ArrayList<User>) tripMap.get("_friends");
-        this._date = (Timestamp) tripMap.get("_date");
+        this._date = (String) tripMap.get("_date");
+        this._city = (String) tripMap.get("_city");
+        this._latitude = (long) tripMap.get("_latitude");
+        this._longitude = (long) tripMap.get("_longitude");
     }
 
     public String getUserId() {
@@ -49,11 +64,11 @@ public class Trip {
         this._tripId = tripId;
     }
 
-    public Timestamp get_date() {
+    public String get_date() {
         return _date;
     }
 
-    public void set_date(Timestamp _date) {
+    public void set_date(String _date) {
         this._date = _date;
     }
 

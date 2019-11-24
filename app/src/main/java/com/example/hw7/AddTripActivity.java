@@ -41,7 +41,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class AddTripActivity extends AppCompatActivity {
+public class AddTripActivity extends AppCompatActivity implements MapFragment.OnFragmentInteractionListener{
     public Button btn_AddFriends;
     public ArrayList<User> users = new ArrayList<User>();
     public String TAG = "demo";
@@ -58,6 +58,9 @@ public class AddTripActivity extends AppCompatActivity {
     public String userId;
     public String tripId;
     public int REQ_CODE = 5;
+    public String selectedCity;
+    public double latitude;
+    public double longitude;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,11 +140,11 @@ public class AddTripActivity extends AppCompatActivity {
         btn_submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Date date = (Date) et_date.getText();
-                Timestamp ts = new Timestamp(date);
-
+               // Date date =
+                //Timestamp ts = new Timestamp(et_date.getText());
+                String dateValue = et_date.getText().toString();
                 Trip trip = new Trip(userId, tripId, et_title.getText().toString(),
-                        et_description.getText().toString(), selectedUsers, ts);
+                        et_description.getText().toString(), selectedUsers, dateValue, selectedCity, (long) latitude, (long) longitude);
                 db.collection("trips").document(tripId).set(trip);
                 finish();
             }
@@ -206,5 +209,12 @@ public class AddTripActivity extends AppCompatActivity {
                 }
             }
         }
+    }
+
+    @Override
+    public void goToPreviousFragment(String selectedLocation, double latitude, double longitude) {
+        this.selectedCity = selectedLocation;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 }

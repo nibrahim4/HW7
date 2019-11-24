@@ -68,6 +68,9 @@ public class MainActivity extends AppCompatActivity {
                                     Toast.makeText(MainActivity.this, "Authentication successful.",
                                             Toast.LENGTH_SHORT).show();
                                     Intent intentToDashboard = new Intent(MainActivity.this, DashboardActivity.class);
+                                    Bundle bundle = new Bundle();
+                                    bundle.putString("userId", user.getUid());
+                                    intentToDashboard.putExtra("bundleData", bundle);
                                     startActivity(intentToDashboard);
                                 } else {
                                     // If sign in fails, display a message to the user.

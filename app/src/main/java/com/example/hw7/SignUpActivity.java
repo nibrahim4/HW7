@@ -4,17 +4,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -30,19 +26,14 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 public class SignUpActivity extends AppCompatActivity {
 
@@ -86,7 +77,7 @@ public class SignUpActivity extends AppCompatActivity {
         rg_gender = findViewById(R.id.radioGroup);
         rb_female = findViewById(R.id.rb_female);
         rb_male = findViewById(R.id.rb_male);
-        btn_signUp = findViewById(R.id.btn_signUp);
+        btn_signUp = findViewById(R.id.btn_edit);
         iv_selectAvatar =findViewById(R.id.iv_selectAvatar);
 
         // Initialize Firebase Auth
@@ -102,6 +93,24 @@ public class SignUpActivity extends AppCompatActivity {
 
         });
 
+        rg_gender.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                switch (radioGroup.getCheckedRadioButtonId()) {
+                    case R.id.rb_female:
+                        selectedGender = "female";
+                        Log.d(TAG, "clicked gender: " + selectedGender);
+                        break;
+                    case R.id.rb_male:
+                        selectedGender = "male";
+                        Log.d(TAG, "clicked gender: " + selectedGender);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
+
         btn_signUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -110,21 +119,7 @@ public class SignUpActivity extends AppCompatActivity {
                 final String firstName = et_firstName.getText().toString();
                 final String lastName = et_lastName.getText().toString();
 
-                rg_gender.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-                     @Override
-                     public void onCheckedChanged(RadioGroup radioGroup, int i) {
-                         switch (radioGroup.getCheckedRadioButtonId()) {
-                             case R.id.rb_female:
-                                 selectedGender = "female";
-                                 break;
-                             case R.id.rb_male:
-                                 selectedGender = "male";
-                                 break;
-                             default:
-                                 break;
-                         }
-                     }
-                 });
+
                 Log.d(TAG, "email " + email);
                 Log.d(TAG, "password " + password);
                 mAuth.createUserWithEmailAndPassword(email, password)
@@ -138,7 +133,7 @@ public class SignUpActivity extends AppCompatActivity {
                                     userId = user.getUid();
                                     Toast.makeText(SignUpActivity.this, "Sign up was successful.",
                                             Toast.LENGTH_SHORT).show();
-
+                                    Log.d(TAG, "gender: " + selectedGender);
                                     User newUser = new User(userId, firstName, lastName,email, selectedGender, null,null );
                                     addUserToDb(newUser);
                                 } else {
@@ -157,33 +152,14 @@ public class SignUpActivity extends AppCompatActivity {
 
     public void addUserToDb(User newUser){
 
-        Map<String, Object> userMap = new HashMap<>();
-        userMap.put("userId", newUser.userId);
-        userMap.put("firstName", newUser.firstName);
-        userMap.put("lastName", newUser.lastName);
-        userMap.put("email", newUser.emailAddress);
-        userMap.put("gender", newUser.gender);
-        userMap.put("url", url);
-
         Bitmap bMap = BitmapFactory.decodeResource(getResources(), R.drawable.avatar_f_1);
-        uploadImage(bMap);
+        uploadImage(newUser, bMap);
+
         Intent intentToDashboard = new Intent(SignUpActivity.this, DashboardActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putString("userId", newUser.userId);
+        intentToDashboard.putExtra("bundleData", bundle);
         startActivity(intentToDashboard);
-
-        db.collection("users").document(userId)
-            .set(userMap)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-
-                    }
-                });
     }
 
     @Override
@@ -219,7 +195,7 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
     //UPLOAD IMAGE TO CLOUD
-    private void uploadImage(Bitmap photoBitmap) {
+    private void uploadImage(final User newUser, Bitmap photoBitmap) {
 
         final StorageReference avatarRepo = storageReference.child("avatars/" + userId +".png");
 
@@ -258,12 +234,32 @@ public class SignUpActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<Uri> task) {
                 if (task.isSuccessful()) {
-                    Log.d(TAG, "Image Download URL" + task.getResult());
+
+                    Map<String, Object> userMap = new HashMap<>();
+                    userMap.put("userId", newUser.userId);
+                    userMap.put("firstName", newUser.firstName);
+                    userMap.put("lastName", newUser.lastName);
+                    userMap.put("email", newUser.emailAddress);
+                    userMap.put("gender", newUser.gender);
+                    userMap.put("url", task.getResult().toString());
+
                     url = task.getResult().toString();
+                    Log.d(TAG, "Image Download URL" +  url);
 
+                    db.collection("users").document(userId)
+                            .set(userMap)
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
 
-//                    image.url = imageURL;
-//                    images.add(image);
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+
+                                }
+                            });
 
                 }
             }

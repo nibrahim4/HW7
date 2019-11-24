@@ -45,4 +45,14 @@
         android:text="@string/btn_trips"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btn_ListOfUsers" />
+
+    <Button
+        android:id="@+id/btn_editProfile"
+        android:layout_width="167dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="32dp"
+        android:text="@string/btn_editProfile"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_trips" />
 </androidx.constraintlayout.widget.ConstraintLayout>
