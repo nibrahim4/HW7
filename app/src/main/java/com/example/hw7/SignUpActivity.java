@@ -63,6 +63,7 @@ public class SignUpActivity extends AppCompatActivity {
     public String selectedAvatarFileName;
     public User newUser = new User();
     public String url ;
+    public String selectedAvatarTagName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -151,9 +152,35 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
     public void addUserToDb(User newUser){
+        Bitmap bMap = null;
+        switch(iv_selectAvatar.getTag().toString()){
+            case "avatar1":
+                bMap = BitmapFactory.decodeResource(getResources(),R.drawable.avatar_f_3 );
+                uploadImage(newUser, bMap);
+                break;
+            case "avatar2":
+                bMap = BitmapFactory.decodeResource(getResources(),R.drawable.avatar_f_2);
+                uploadImage(newUser, bMap);
+                break;
+            case "avatar3":
+                bMap = BitmapFactory.decodeResource(getResources(),R.drawable.avatar_f_1);
+                uploadImage(newUser, bMap);
+                break;
+            case "avatar4":
+                bMap = BitmapFactory.decodeResource(getResources(),R.drawable.avatar_m_1);
+                uploadImage(newUser, bMap);
+                break;
+            case "avatar5":
+                bMap = BitmapFactory.decodeResource(getResources(),R.drawable.avatar_m_2);
+                uploadImage(newUser, bMap);
+                break;
+            case "avatar6":
+                bMap = BitmapFactory.decodeResource(getResources(),R.drawable.avatar_m_3);
+                uploadImage(newUser, bMap);
+                break;
 
-        Bitmap bMap = BitmapFactory.decodeResource(getResources(), R.drawable.avatar_f_1);
-        uploadImage(newUser, bMap);
+        }
+
 
         Intent intentToDashboard = new Intent(SignUpActivity.this, DashboardActivity.class);
         Bundle bundle = new Bundle();
@@ -169,7 +196,7 @@ public class SignUpActivity extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
                 extrasFromSelectAvatar = data.getExtras().getBundle(SIGNUP_KEY);
 
-                String selectedAvatarTagName = (String) extrasFromSelectAvatar.getSerializable("avatar");
+                selectedAvatarTagName = (String) extrasFromSelectAvatar.getSerializable("avatar");
                 Log.d(TAG, "onActivityResult: " + data.getExtras().getSerializable("avatar"));
                 if (selectedAvatarTagName != null) {
                     if (selectedAvatarTagName.equals("avatar1")) {

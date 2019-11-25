@@ -5,6 +5,9 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -12,8 +15,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -23,7 +28,14 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
+
+import java.io.ByteArrayOutputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 public class EditProfileActivity extends AppCompatActivity {
 
@@ -33,6 +45,7 @@ public class EditProfileActivity extends AppCompatActivity {
     public FirebaseAuth mAuth;
     public EditText et_firstName_edit;
     public EditText et_lastName_edit;
+    public RadioGroup rg_gender_edit;
     public RadioButton rb_female;
     public RadioButton rb_male;
     public EditText et_email_edit;
@@ -40,9 +53,13 @@ public class EditProfileActivity extends AppCompatActivity {
     public Bundle extrasFromDashboard;
     public ImageView iv_selectAvatar_edit;
     public Button btn_updateProfile;
-    public int REQCODE =5;
+    public int REQCODE = 5;
     public static final String EDIT_KEY = "avatar";
     public Bundle extrasFromSelectAvatar;
+    public FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
+    public StorageReference storageReference = firebaseStorage.getReference();
+    public String userId;
+    public String selectedAvatarTagName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,12 +69,13 @@ public class EditProfileActivity extends AppCompatActivity {
 
         extrasFromDashboard = getIntent().getExtras().getBundle("bundleData");
 
-        final String userId = (String) extrasFromDashboard.getSerializable("userId");
+        userId = (String) extrasFromDashboard.getSerializable("userId");
 
         et_firstName_edit = findViewById(R.id.et_firstName_edit);
         et_lastName_edit = findViewById(R.id.et_lastName_edit);
         et_email_edit = findViewById(R.id.et_newUser_email_edit);
         et_password_edit = findViewById(R.id.et_newUser_password_edit);
+        rg_gender_edit = findViewById(R.id.radioGroup_edit);
         rb_female = findViewById(R.id.rb_female_edit);
         rb_male = findViewById(R.id.rb_male_edit);
         iv_selectAvatar_edit = findViewById(R.id.iv_selectAvatar_edit);
@@ -70,7 +88,7 @@ public class EditProfileActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intentToSelectAvatar = new Intent(EditProfileActivity.this, SelectAvatarActivity.class);
-                startActivityForResult(intentToSelectAvatar,REQCODE);
+                startActivityForResult(intentToSelectAvatar, REQCODE);
             }
         });
         DocumentReference docRef = db.collection("users").document(userId);
@@ -113,46 +131,127 @@ public class EditProfileActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View view) {
-                Log.d(TAG, "current user: " +  userId);
-                if(!et_email_edit.getText().toString().equals("") || et_email_edit.getText() != null) {
+                Log.d(TAG, "current user: " + userId);
+                if (!et_email_edit.getText().toString().equals("") || et_email_edit.getText() != null) {
                     final Task updateEmailTask = FirebaseAuth.getInstance().getCurrentUser().updateEmail(et_email_edit.getText().toString());
                     updateEmailTask.addOnCompleteListener(new OnCompleteListener() {
                         @Override
                         public void onComplete(@NonNull Task task) {
                             if (task.isSuccessful()) {
                                 Log.d(TAG, "email task: " + updateEmailTask.getResult());
-                                db.collection("users").document(userId).update("email", et_email_edit.getText().toString())
-                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                            @Override
-                                            public void onSuccess(Void aVoid) {
-                                                Log.d(TAG, "Documnetsnapshot successfully updated!");
-                                            }
-                                        })
-                                        .addOnFailureListener(new OnFailureListener() {
-                                            @Override
-                                            public void onFailure(@NonNull Exception e) {
-                                                Log.w(TAG, "Error updating document", e);
-                                            }
-                                        });
-                                ;
+                                db.collection("users").document(userId).update("email", et_email_edit.getText().toString());
                             }
                         }
                     });
                 }
                 Log.d(TAG, "password: " + et_password_edit.getText().toString());
-                if(!et_password_edit.getText().toString().equals("") && et_password_edit.getText() != null){
+                if (!et_password_edit.getText().toString().equals("") && et_password_edit.getText() != null) {
                     Task updatePasswordTask = FirebaseAuth.getInstance().getCurrentUser().updatePassword(et_password_edit.getText().toString());
-                    updatePasswordTask.addOnCompleteListener(new OnCompleteListener() {
-                        @Override
-                        public void onComplete(@NonNull Task task) {
-                            if (task.isSuccessful()) {
-                                Log.d(TAG, "password task: " + task.getResult());
-                            }
-                        }
-                    });
                 }
+
+
+                db.collection("users").document(userId).update("firstName", et_firstName_edit.getText().toString());
+                db.collection("users").document(userId).update("lastName", et_lastName_edit.getText().toString());
+
+                rg_gender_edit.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                        switch (radioGroup.getCheckedRadioButtonId()) {
+                            case R.id.rb_female_edit:
+                                db.collection("users").document(userId).update("gender", "female");
+                                break;
+                            case R.id.rb_male_edit:
+                                db.collection("users").document(userId).update("gender", "male");
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                });
+
+                Bitmap bMap = null;
+                if(selectedAvatarTagName != null && !selectedAvatarTagName.equals("")) {
+                    switch (selectedAvatarTagName) {
+                        case "avatar1":
+                            bMap = BitmapFactory.decodeResource(getResources(), R.drawable.avatar_f_3);
+                            uploadImage(bMap);
+                            break;
+                        case "avatar2":
+                            bMap = BitmapFactory.decodeResource(getResources(), R.drawable.avatar_f_2);
+                            uploadImage(bMap);
+                            break;
+                        case "avatar3":
+                            bMap = BitmapFactory.decodeResource(getResources(), R.drawable.avatar_f_1);
+                            uploadImage(bMap);
+                            break;
+                        case "avatar4":
+                            bMap = BitmapFactory.decodeResource(getResources(), R.drawable.avatar_m_1);
+                            uploadImage(bMap);
+                            break;
+                        case "avatar5":
+                            bMap = BitmapFactory.decodeResource(getResources(), R.drawable.avatar_m_2);
+                            uploadImage(bMap);
+                            break;
+                        case "avatar6":
+                            bMap = BitmapFactory.decodeResource(getResources(), R.drawable.avatar_m_3);
+                            uploadImage(bMap);
+                            break;
+
+                    }
+
+            }
+                finish();
+            }
+
+        });
+
+
+    }
+
+    //UPLOAD IMAGE TO CLOUD
+    private void uploadImage(Bitmap photoBitmap) {
+
+        final StorageReference avatarRepo = storageReference.child("avatars/" + userId + ".png");
+
+        //newUser.storagePath = avatarRepo.getPath();
+
+//        Converting the Bitmap into a bytearrayOutputstream....
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        photoBitmap.compress(Bitmap.CompressFormat.PNG, 50, baos);
+        byte[] data = baos.toByteArray();
+
+        UploadTask uploadTask = avatarRepo.putBytes(data);
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.e(TAG, "onFailure: " + e.getMessage());
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                Log.d(TAG, "onSuccess: " + "Image Uploaded!!!");
             }
         });
+
+        Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+            @Override
+            public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+
+                if (!task.isSuccessful()) {
+                    throw task.getException();
+                }
+
+                return avatarRepo.getDownloadUrl();
+            }
+        }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+            @Override
+            public void onComplete(@NonNull Task<Uri> task) {
+            if (task.isSuccessful()) {
+                db.collection("users").document(userId).update("url", task.getResult().toString());
+            }
+            }
+        });
+
     }
 
     @Override
@@ -162,7 +261,7 @@ public class EditProfileActivity extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
                 extrasFromSelectAvatar = data.getExtras().getBundle(EDIT_KEY);
 
-                String selectedAvatarTagName = (String) extrasFromSelectAvatar.getSerializable("avatar");
+                selectedAvatarTagName = (String) extrasFromSelectAvatar.getSerializable("avatar");
                 Log.d(TAG, "onActivityResult: " + data.getExtras().getSerializable("avatar"));
                 if (selectedAvatarTagName != null) {
                     if (selectedAvatarTagName.equals("avatar1")) {
@@ -179,7 +278,7 @@ public class EditProfileActivity extends AppCompatActivity {
                         iv_selectAvatar_edit.setImageResource(R.drawable.avatar_m_3);
                     }
 
-                }else{
+                } else {
                     Toast.makeText(this, "No avatar was selected!", Toast.LENGTH_SHORT).show();
                 }
 
