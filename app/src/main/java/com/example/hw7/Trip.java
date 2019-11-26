@@ -2,13 +2,14 @@ package com.example.hw7;
 
 import com.google.firebase.Timestamp;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Trip {
+public class Trip implements Serializable {
 
     public String _userId, _tripId, _title, _description, _city;
     public String _date;

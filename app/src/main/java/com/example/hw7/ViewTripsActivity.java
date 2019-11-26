@@ -55,6 +55,9 @@ public class ViewTripsActivity extends AppCompatActivity {
                         @Override
                         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                             Intent intentToViewTrip = new Intent(ViewTripsActivity.this, TripActivity.class);
+                            Bundle bundle = new Bundle();
+                            bundle.putSerializable("selectedTrip", trips.get(i));
+                            intentToViewTrip.putExtra("bundleData", bundle);
                             startActivity(intentToViewTrip);
                         }
                     });

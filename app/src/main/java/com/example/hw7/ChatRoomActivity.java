@@ -3,6 +3,7 @@ package com.example.hw7;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -37,15 +38,18 @@ public class ChatRoomActivity extends AppCompatActivity {
     public FirebaseAuth mAuth;
     public String TAG = "demo";
     public String userEmail;
+    public Button btn_cancel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_room);
+        setTitle("Chat Room");
 
         et_message = findViewById(R.id.et_message);
         lv_messages = findViewById(R.id.lv_messages);
         btn_sendMessage = findViewById(R.id.btn_send);
+        btn_cancel = findViewById(R.id.btn_cancel);
         messages = new ArrayList<>();
         adapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, messages);
         lv_messages.setAdapter(adapter);
@@ -82,6 +86,14 @@ public class ChatRoomActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 create_chatroom();
+            }
+        });
+
+        btn_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intentToDashboard = new Intent(ChatRoomActivity.this, DashboardActivity.class);
+                startActivity(intentToDashboard);
             }
         });
 
