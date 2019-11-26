@@ -3,8 +3,11 @@ package com.example.hw7;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -47,6 +50,14 @@ public class ViewTripsActivity extends AppCompatActivity {
 
                     // give adapter to ListView UI element to render
                     lv_trips.setAdapter(ad);
+
+                    lv_trips.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                            Intent intentToViewTrip = new Intent(ViewTripsActivity.this, TripActivity.class);
+                            startActivity(intentToViewTrip);
+                        }
+                    });
 
                 } else {
                     Log.d(TAG, "Error getting documents: ", task.getException());

@@ -33,6 +33,10 @@ import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.util.Util;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.RemoteMessage;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,6 +51,7 @@ public class AddTripActivity extends AppCompatActivity implements MapFragment.On
     public String TAG = "demo";
     // Access a Cloud Firestore instance from your Activity
     public FirebaseFirestore db = FirebaseFirestore.getInstance();
+    public FirebaseMessaging fm;
     public ArrayList<User> selectedUsers = new ArrayList<>();
     protected CharSequence[] _users;
     public EditText et_title;
@@ -140,8 +145,6 @@ public class AddTripActivity extends AppCompatActivity implements MapFragment.On
         btn_submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-               // Date date =
-                //Timestamp ts = new Timestamp(et_date.getText());
                 String dateValue = et_date.getText().toString();
                 Trip trip = new Trip(userId, tripId, et_title.getText().toString(),
                         et_description.getText().toString(), selectedUsers, dateValue, selectedCity, (long) latitude, (long) longitude);
