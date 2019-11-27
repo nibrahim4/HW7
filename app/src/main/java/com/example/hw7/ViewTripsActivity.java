@@ -8,15 +8,20 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class ViewTripsActivity extends AppCompatActivity {
 
@@ -25,6 +30,9 @@ public class ViewTripsActivity extends AppCompatActivity {
     public FirebaseFirestore db = FirebaseFirestore.getInstance();
     public String TAG = "demo";
     public ArrayList<Trip> trips = new ArrayList<Trip>();
+    public FirebaseAuth mAuth;
+    public String userId;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,15 +42,27 @@ public class ViewTripsActivity extends AppCompatActivity {
 
         lv_trips = findViewById(R.id.lv_trips);
 
+        // Initialize Firebase Auth
+        mAuth = FirebaseAuth.getInstance();
+
+        FirebaseUser user = mAuth.getCurrentUser();
+        userId = user.getUid();
 
         db.collection("trips").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
                     for (QueryDocumentSnapshot document : task.getResult()) {
-                        Trip trip = new Trip(document.getData());
-                        trips.add(trip);
-                        Log.d(TAG, document.getId() + " => " + document.getData());
+
+                        ArrayList<User> friends = (ArrayList<User>) document.get("_friends");
+                        for (int i=0; i<friends.size(); i++){
+                            if(document.toObject(Trip.class).getFriends().get(i).getUserId().equals(userId)){
+                                Trip trip = new Trip(document.getData());
+                                trips.add(trip);
+                            }
+                           // Log.d(TAG, document.getId() + " => " + document.toObject(Trip.class).getFriends().get(i).getUserId());
+                        }
+
                     }
 
                     final TripAdapter ad = new TripAdapter(ViewTripsActivity.this,

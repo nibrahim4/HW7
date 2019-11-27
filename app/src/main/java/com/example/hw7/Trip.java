@@ -16,6 +16,10 @@ public class Trip implements Serializable {
     public long _latitude, _longitude;
     public ArrayList<User> _friends = new ArrayList<>();
 
+    public Trip(){
+
+
+    }
     public Trip(String userId,
                 String tripId,
                 String title,
