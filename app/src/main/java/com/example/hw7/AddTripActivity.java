@@ -10,6 +10,10 @@ import android.app.AlertDialog;
 import android.app.Instrumentation;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -21,6 +25,7 @@ import android.widget.ImageView;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -37,7 +42,11 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.RemoteMessage;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -66,6 +75,11 @@ public class AddTripActivity extends AppCompatActivity implements MapFragment.On
     public String selectedCity;
     public double latitude;
     public double longitude;
+    public FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
+    public StorageReference storageReference = firebaseStorage.getReference();
+    public String coverPhotoUrl;
+    public int selectedCoverPhoto;
+    public Bitmap bMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -146,9 +160,15 @@ public class AddTripActivity extends AppCompatActivity implements MapFragment.On
             @Override
             public void onClick(View view) {
                 String dateValue = et_date.getText().toString();
+
+
+
+                Log.d(TAG, "coverPhotoUrl: " + coverPhotoUrl);
                 Trip trip = new Trip(userId, tripId, et_title.getText().toString(),
-                        et_description.getText().toString(), selectedUsers, dateValue, selectedCity, (long) latitude, (long) longitude);
+                        et_description.getText().toString(), selectedUsers, dateValue, selectedCity, (long) latitude, (long) longitude, coverPhotoUrl);
+
                 db.collection("trips").document(tripId).set(trip);
+
                 finish();
             }
 
@@ -196,20 +216,30 @@ public class AddTripActivity extends AppCompatActivity implements MapFragment.On
             // Make sure the request was successful
             if (resultCode == RESULT_OK) {
                 if (data.getExtras().getSerializable("coverPhoto").equals("alaska")) {
+                    selectedCoverPhoto = R.drawable.alaska;
                     iv_coverPhoto.setImageResource(R.drawable.alaska);
                 } else if (data.getExtras().getSerializable("coverPhoto").equals("borabora")) {
+                    selectedCoverPhoto = R.drawable.borabora;
                     iv_coverPhoto.setImageResource(R.drawable.borabora);
                 } else if (data.getExtras().getSerializable("coverPhoto").equals("cappadocia")) {
+                    selectedCoverPhoto = R.drawable.cappadocia;
                     iv_coverPhoto.setImageResource(R.drawable.cappadocia);
                 } else if (data.getExtras().getSerializable("coverPhoto").equals("cavin")) {
+                    selectedCoverPhoto = R.drawable.cavin;
                     iv_coverPhoto.setImageResource(R.drawable.cavin);
                 } else if (data.getExtras().getSerializable("coverPhoto").equals("colombia")) {
+                    selectedCoverPhoto = R.drawable.colombia;
                     iv_coverPhoto.setImageResource(R.drawable.colombia);
                 } else if (data.getExtras().getSerializable("coverPhoto").equals("grandCanyon")) {
+                    selectedCoverPhoto = R.drawable.grandcanyonofthecoloradoar;
                     iv_coverPhoto.setImageResource(R.drawable.grandcanyonofthecoloradoar);
                 } else if (data.getExtras().getSerializable("coverPhoto").equals("snowboard")) {
+                    selectedCoverPhoto = R.drawable.snowboard;
                     iv_coverPhoto.setImageResource(R.drawable.snowboard);
                 }
+
+                bMap = BitmapFactory.decodeResource(getResources(), selectedCoverPhoto);
+                uploadImage(bMap);
             }
         }
     }
@@ -219,5 +249,52 @@ public class AddTripActivity extends AppCompatActivity implements MapFragment.On
         this.selectedCity = selectedLocation;
         this.latitude = latitude;
         this.longitude = longitude;
+    }
+
+    //UPLOAD IMAGE TO CLOUD
+    private void uploadImage( Bitmap photoBitmap) {
+
+        final StorageReference avatarRepo = storageReference.child("coverPhotos/" + tripId +".png");
+
+//        Converting the Bitmap into a bytearrayOutputstream....
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        photoBitmap.compress(Bitmap.CompressFormat.PNG, 50, baos);
+        byte[] data = baos.toByteArray();
+
+        UploadTask uploadTask = avatarRepo.putBytes(data);
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.e(TAG, "onFailure: " + e.getMessage());
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                Log.d(TAG, "onSuccess: " + "Image Uploaded!!!");
+            }
+        });
+
+
+        Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+            @Override
+            public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+//                return null;
+                if (!task.isSuccessful()) {
+                    throw task.getException();
+                }
+
+                return avatarRepo.getDownloadUrl();
+            }
+        }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+            @Override
+            public void onComplete(@NonNull Task<Uri> task) {
+                if (task.isSuccessful()) {
+                    Log.d(TAG, "task.getResult().toString(): " + task.getResult().toString());
+                    coverPhotoUrl = task.getResult().toString();
+
+                }
+            }
+        });
+
     }
 }

@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class Trip implements Serializable {
 
-    public String _userId, _tripId, _title, _description, _city;
+    public String _userId, _tripId, _title, _description, _city, _url;
     public String _date;
     public long _latitude, _longitude;
     public ArrayList<User> _friends = new ArrayList<>();
@@ -20,6 +20,11 @@ public class Trip implements Serializable {
 
 
     }
+
+    public void set_url(String _url) {
+        this._url = _url;
+    }
+
     public Trip(String userId,
                 String tripId,
                 String title,
@@ -28,7 +33,8 @@ public class Trip implements Serializable {
                 String date,
                 String city,
                 long latitude,
-                long longitude) {
+                long longitude,
+                String url) {
         this._userId = userId;
         this._tripId = tripId;
         this._title = title;
@@ -38,6 +44,11 @@ public class Trip implements Serializable {
         this._city = city;
         this._latitude = latitude;
         this._longitude = longitude;
+        this._url = url;
+    }
+
+    public String get_url() {
+        return _url;
     }
 
     public Trip (Map tripMap) {
@@ -51,6 +62,7 @@ public class Trip implements Serializable {
         this._city = (String) tripMap.get("_city");
         this._latitude = (long) tripMap.get("_latitude");
         this._longitude = (long) tripMap.get("_longitude");
+        this._url = (String) tripMap.get("_url");
     }
 
     public String getUserId() {

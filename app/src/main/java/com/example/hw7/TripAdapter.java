@@ -16,6 +16,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.ListResult;
 import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -44,17 +45,16 @@ public class TripAdapter extends ArrayAdapter<Trip> {
 
         TextView tv_description_trips = convertView.findViewById(R.id.tv_description_trips);
         tv_description_trips.setText(trip.getDescription());
-//
-//        TextView tv_gender = convertView.findViewById(R.id.tv_user_gender);
-//        tv_gender.setText(user.gender);
-//
-//        TextView tv_email = convertView.findViewById(R.id.tv_user_email);
-//        tv_email.setText(user.emailAddress);
-//
-//        ImageView iv_avatar = convertView.findViewById(R.id.iv_user_avatar);
-//
-//        Log.d(TAG, "getView: " + user.url);
-//        StorageReference sf = storageReference.child("avatars").child(user.userId + ".png");
+
+        TextView tv_date_trips = convertView.findViewById(R.id.tv_date_trips);
+        tv_date_trips.setText(trip.get_date());
+
+        TextView tv_location_trip = convertView.findViewById(R.id.tv_address_trips);
+        tv_location_trip.setText(trip._city);
+
+        ImageView iv_coverPhoto_trips = convertView.findViewById(R.id.iv_coverPhoto_trips);
+        Log.d(TAG, "trip url: " + trip.get_url());
+        Picasso.get().load(trip.get_url()).into(iv_coverPhoto_trips);
 
         return convertView;
     }

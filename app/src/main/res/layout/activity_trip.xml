@@ -6,35 +6,15 @@
     android:layout_height="match_parent"
     tools:context=".TripActivity">
 
-    <ImageView
-        android:id="@+id/iv_chatIcon"
-        android:layout_width="68dp"
-        android:layout_height="65dp"
-        android:layout_above="@+id/btn_join"
-        android:layout_alignParentStart="true"
-        android:layout_marginStart="38dp"
-        android:layout_marginEnd="179dp"
-        android:layout_marginBottom="-18dp"
-        android:layout_toStartOf="@+id/iv_deleteIcon"
-        app:srcCompat="@drawable/chat" />
-
-    <ImageView
-        android:id="@+id/iv_deleteIcon"
-        android:layout_width="80dp"
-        android:layout_height="63dp"
-        android:layout_above="@+id/btn_join"
-        android:layout_alignParentEnd="true"
-        android:layout_marginEnd="45dp"
-        android:layout_marginBottom="-18dp"
-        app:srcCompat="@drawable/delete" />
-
     <Button
         android:id="@+id/btn_join"
-        android:layout_width="wrap_content"
+        android:layout_width="247dp"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginStart="149dp"
+        android:layout_marginStart="68dp"
+        android:layout_marginEnd="96dp"
         android:layout_marginBottom="33dp"
         android:text="@string/btn_join" />
 
@@ -46,6 +26,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="33dp"
         android:text="@string/tv_title_singleTrip"
+        android:textAlignment="center"
         android:textSize="18sp"
         android:textStyle="bold" />
 </RelativeLayout>

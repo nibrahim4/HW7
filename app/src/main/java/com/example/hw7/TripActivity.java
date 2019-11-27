@@ -28,6 +28,7 @@ public class TripActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trip);
+        setTitle("Join Trip");
 
         extrasFromViewTrips = getIntent().getExtras().getBundle("bundleData");
 
@@ -45,14 +46,14 @@ public class TripActivity extends AppCompatActivity {
             }
         });
 
-        iv_chatIcon = findViewById(R.id.iv_chatIcon);
-        iv_chatIcon.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intentToChatRoom = new Intent(TripActivity.this, ChatRoomActivity.class);
-                startActivity(intentToChatRoom);
-            }
-        });
+//        iv_chatIcon = findViewById(R.id.iv_chatIcon);
+//        iv_chatIcon.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Intent intentToChatRoom = new Intent(TripActivity.this, ChatRoomActivity.class);
+//                startActivity(intentToChatRoom);
+//            }
+//        });
 
 
 

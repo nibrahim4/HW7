@@ -37,7 +37,7 @@ public class ViewTripsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_trips);
-        setTitle("Your Trips");
+        setTitle("Explore Trips");
 
 
         lv_trips = findViewById(R.id.lv_trips);
@@ -53,16 +53,13 @@ public class ViewTripsActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
                     for (QueryDocumentSnapshot document : task.getResult()) {
-
                         ArrayList<User> friends = (ArrayList<User>) document.get("_friends");
                         for (int i=0; i<friends.size(); i++){
-                            if(document.toObject(Trip.class).getFriends().get(i).getUserId().equals(userId)){
+                            if(!document.toObject(Trip.class).getFriends().get(i).getUserId().equals(userId)){
                                 Trip trip = new Trip(document.getData());
                                 trips.add(trip);
                             }
-                           // Log.d(TAG, document.getId() + " => " + document.toObject(Trip.class).getFriends().get(i).getUserId());
                         }
-
                     }
 
                     final TripAdapter ad = new TripAdapter(ViewTripsActivity.this,
