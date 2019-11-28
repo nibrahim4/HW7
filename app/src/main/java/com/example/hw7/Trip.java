@@ -13,7 +13,7 @@ public class Trip implements Serializable {
 
     public String _userId, _tripId, _title, _description, _city, _url;
     public String _date;
-    public long _latitude, _longitude;
+    public String _latitude, _longitude;
     public ArrayList<User> _friends = new ArrayList<>();
 
     public Trip(){
@@ -32,8 +32,8 @@ public class Trip implements Serializable {
                 ArrayList<User> friends,
                 String date,
                 String city,
-                long latitude,
-                long longitude,
+                String latitude,
+                String longitude,
                 String url) {
         this._userId = userId;
         this._tripId = tripId;
@@ -60,8 +60,8 @@ public class Trip implements Serializable {
         this._friends = (ArrayList<User>) tripMap.get("_friends");
         this._date = (String) tripMap.get("_date");
         this._city = (String) tripMap.get("_city");
-        this._latitude = (long) tripMap.get("_latitude");
-        this._longitude = (long) tripMap.get("_longitude");
+        this._latitude =  (String) tripMap.get("_latitude");
+        this._longitude = (String) tripMap.get("_longitude");
         this._url = (String) tripMap.get("_url");
     }
 

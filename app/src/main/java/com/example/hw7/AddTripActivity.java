@@ -164,8 +164,16 @@ public class AddTripActivity extends AppCompatActivity implements MapFragment.On
 
 
                 Log.d(TAG, "coverPhotoUrl: " + coverPhotoUrl);
-                Trip trip = new Trip(userId, tripId, et_title.getText().toString(),
-                        et_description.getText().toString(), selectedUsers, dateValue, selectedCity, (long) latitude, (long) longitude, coverPhotoUrl);
+                Trip trip = new Trip(userId,
+                        tripId,
+                        et_title.getText().toString(),
+                        et_description.getText().toString(),
+                        selectedUsers,
+                        dateValue,
+                        selectedCity,
+                        String.valueOf(latitude) ,
+                        String.valueOf(longitude),
+                        coverPhotoUrl);
 
                 db.collection("trips").document(tripId).set(trip);
 

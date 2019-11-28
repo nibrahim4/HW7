@@ -2,6 +2,9 @@ package com.example.hw7;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -23,6 +26,9 @@ public class TripActivity extends AppCompatActivity {
     public ImageView iv_chatIcon;
     public Bundle extrasFromViewTrips;
     public TextView tv_title_singleTrip;
+    public TextView tv_description_singleTrip;
+    public TextView tv_location_singleTrip;
+    public TextView tv_date_singleTrip;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +40,12 @@ public class TripActivity extends AppCompatActivity {
 
         final Trip selectedTrip = (Trip) extrasFromViewTrips.getSerializable("selectedTrip");
 
+        addFragment(new SingleMapFragment(selectedTrip), false, "one");
+
         tv_title_singleTrip = findViewById(R.id.tv_title_singleTrip);
+        tv_description_singleTrip = findViewById(R.id.tv_description_join);
+        tv_location_singleTrip = findViewById(R.id.tv_location_join);
+        tv_date_singleTrip = findViewById(R.id.tv_date_join);
 
         db.collection("trips").document(selectedTrip.getTripId()).get()
                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -42,20 +53,22 @@ public class TripActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
 
                 tv_title_singleTrip.setText(selectedTrip.getTitle());
+                tv_description_singleTrip.setText(selectedTrip.getDescription());
+                tv_location_singleTrip.setText(selectedTrip._city);
+                tv_date_singleTrip.setText(selectedTrip.get_date());
 
             }
         });
+    }
 
-//        iv_chatIcon = findViewById(R.id.iv_chatIcon);
-//        iv_chatIcon.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Intent intentToChatRoom = new Intent(TripActivity.this, ChatRoomActivity.class);
-//                startActivity(intentToChatRoom);
-//            }
-//        });
+    public void addFragment(Fragment fragment, boolean addToBackStack, String tag) {
+        FragmentManager manager = getSupportFragmentManager();
+        FragmentTransaction ft = manager.beginTransaction();
 
-
-
+        if (addToBackStack) {
+            ft.addToBackStack(tag);
+        }
+        ft.replace(R.id.container_frame_join, fragment, tag);
+        ft.commitAllowingStateLoss();
     }
 }

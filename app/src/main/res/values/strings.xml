@@ -45,4 +45,7 @@
     <string name="btn_cancel">Cancel</string>
     <string name="tv_title_singleTrip" />
     <string name="btn_myTrips">My Trips</string>
+    <string name="tv_description_join" />
+    <string name="tv_date" />
+    <string name="tv_location_join" />
 </resources>
