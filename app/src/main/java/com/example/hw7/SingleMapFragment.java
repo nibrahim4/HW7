@@ -50,9 +50,13 @@ public class SingleMapFragment extends Fragment {
     public String selectedTripLocation;
     public Trip selectedTrip;
     public String TAG = "demo";
+    private int _layout;
+    private int _fragmentId;
 
-    public SingleMapFragment(Trip trip) {
+    public SingleMapFragment(Trip trip, int layout, int fragmentId ) {
         selectedTrip = trip;
+        _layout = layout;
+        _fragmentId = fragmentId;
     }
 
     public SingleMapFragment() {
@@ -69,9 +73,9 @@ public class SingleMapFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View rootView = inflater.inflate(R.layout.fragment_single_map, container, false);
+        View rootView = inflater.inflate(_layout, container, false);
 
-        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.single_frg);  //use SuppoprtMapFragment for using in fragment instead of activity  MapFragment = activity   SupportMapFragment = fragment
+        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(_fragmentId);  //use SuppoprtMapFragment for using in fragment instead of activity  MapFragment = activity   SupportMapFragment = fragment
         mapFragment.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(GoogleMap mMap) {

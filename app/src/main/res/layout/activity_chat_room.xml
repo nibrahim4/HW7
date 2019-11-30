@@ -8,20 +8,20 @@
 
     <EditText
         android:id="@+id/et_message"
-        android:layout_width="275dp"
-        android:layout_height="51dp"
+        android:layout_width="182dp"
+        android:layout_height="52dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:ems="10"
+        android:hint="@string/et_message"
         android:inputType="textPersonName"
-        android:text="@string/et_message"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/btn_send"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="70dp"
+        android:layout_height="44dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:text="@string/btn_send"
@@ -30,8 +30,8 @@
 
     <ListView
         android:id="@+id/lv_messages"
-        android:layout_width="375dp"
-        android:layout_height="558dp"
+        android:layout_width="419dp"
+        android:layout_height="571dp"
         android:layout_marginStart="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -47,4 +47,14 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/btn_uploadImage"
+        android:layout_width="95dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="13dp"
+        android:text="@string/btn_uploadImage"
+        app:layout_constraintEnd_toStartOf="@+id/btn_send"
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

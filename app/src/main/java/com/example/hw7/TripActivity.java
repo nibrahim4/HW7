@@ -21,6 +21,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -28,7 +29,7 @@ public class TripActivity extends AppCompatActivity {
 
     // Access a Cloud Firestore instance from your Activity
     public FirebaseFirestore db = FirebaseFirestore.getInstance();
-    public ImageView iv_chatIcon;
+    public ImageView iv_coverPhoto_singleTrip;
     public Bundle extrasFromViewTrips;
     public TextView tv_title_singleTrip;
     public TextView tv_description_singleTrip;
@@ -51,13 +52,14 @@ public class TripActivity extends AppCompatActivity {
 
         final Trip selectedTrip = (Trip) extrasFromViewTrips.getSerializable("selectedTrip");
 
-        addFragment(new SingleMapFragment(selectedTrip), false, "one");
+        addFragment(new SingleMapFragment(selectedTrip, R.layout.fragment_single_map, R.id.single_frg), false, "one");
 
         tv_title_singleTrip = findViewById(R.id.tv_title_singleTrip);
         tv_description_singleTrip = findViewById(R.id.tv_description_join);
         tv_location_singleTrip = findViewById(R.id.tv_location_join);
         tv_date_singleTrip = findViewById(R.id.tv_date_join);
         btn_joinTrip = findViewById(R.id.btn_join);
+        iv_coverPhoto_singleTrip = findViewById(R.id.iv_coverPhoto_join);
 
         // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
@@ -74,6 +76,7 @@ public class TripActivity extends AppCompatActivity {
                         tv_description_singleTrip.setText(selectedTrip.getDescription());
                         tv_location_singleTrip.setText(selectedTrip._city);
                         tv_date_singleTrip.setText(selectedTrip.get_date());
+                        Picasso.get().load(selectedTrip.get_url()).into(iv_coverPhoto_singleTrip);
 
                     }
                 });

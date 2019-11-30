@@ -17,6 +17,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -32,6 +33,7 @@ public class MyTripsActivity extends AppCompatActivity {
     public String userId;
     public String TAG = "demo";
     public ArrayList<Trip> trips = new ArrayList<Trip>();
+    public User userObj = new User();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,15 +49,37 @@ public class MyTripsActivity extends AppCompatActivity {
         FirebaseUser user = mAuth.getCurrentUser();
         userId = user.getUid();
 
+        db.collection("users").document(userId).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(task.isSuccessful()){
+                    DocumentSnapshot documentSnapshot = task.getResult();
+                    userObj =   documentSnapshot.toObject(User.class);
+                }
+            }
+        });
         db.collection("trips").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
+
+                    boolean isUserThere = false;
+
                     for (QueryDocumentSnapshot document : task.getResult()) {
-                        if (document.toObject(Trip.class).getUserId().equals(userId)) {
+
+                        for (int i =0; i<document.toObject(Trip.class).getFriends().size(); i++){
+
+                            if(document.toObject(Trip.class).getFriends().get(i).getUserId().equals(userId)){
+                                isUserThere = true;
+                            }
+                        }
+
+                        if (document.toObject(Trip.class).getUserId().equals(userId) ||  isUserThere) {
                             Trip trip = new Trip(document.getData());
                             trips.add(trip);
                         }
+
+
                     }
 
                     final TripAdapter ad = new TripAdapter(MyTripsActivity.this,

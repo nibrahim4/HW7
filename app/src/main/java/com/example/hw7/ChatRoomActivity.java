@@ -3,8 +3,12 @@ package com.example.hw7;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -21,6 +25,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -39,6 +45,8 @@ public class ChatRoomActivity extends AppCompatActivity {
     public String TAG = "demo";
     public String userEmail;
     public Button btn_cancel;
+    public Button btn_uploadImage;
+    private static int GET_FROM_GALLERY = 3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +58,7 @@ public class ChatRoomActivity extends AppCompatActivity {
         lv_messages = findViewById(R.id.lv_messages);
         btn_sendMessage = findViewById(R.id.btn_send);
         btn_cancel = findViewById(R.id.btn_cancel);
+        btn_uploadImage = findViewById(R.id.btn_uploadImage);
         messages = new ArrayList<>();
         adapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, messages);
         lv_messages.setAdapter(adapter);
@@ -97,6 +106,13 @@ public class ChatRoomActivity extends AppCompatActivity {
             }
         });
 
+        btn_uploadImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivityForResult(new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI), GET_FROM_GALLERY);
+            }
+        });
+
     }
 
 
@@ -111,5 +127,26 @@ public class ChatRoomActivity extends AppCompatActivity {
 
         messages.add(messageWithUserName);
         adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+
+        //Detects request codes
+        if(requestCode==GET_FROM_GALLERY && resultCode == Activity.RESULT_OK) {
+            Uri selectedImage = data.getData();
+            Bitmap bitmap = null;
+            try {
+                bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImage);
+            } catch (FileNotFoundException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
     }
 }
