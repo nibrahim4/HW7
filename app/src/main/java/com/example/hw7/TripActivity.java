@@ -38,6 +38,8 @@ public class TripActivity extends AppCompatActivity {
     public ArrayList<User> friends = new ArrayList<User>();
     public FirebaseAuth mAuth;
     public String userId;
+    public User newUser = new User();
+    public String TAG = "demo";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,28 +67,45 @@ public class TripActivity extends AppCompatActivity {
 
         db.collection("trips").document(selectedTrip.getTripId()).get()
                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
 
-                tv_title_singleTrip.setText(selectedTrip.getTitle());
-                tv_description_singleTrip.setText(selectedTrip.getDescription());
-                tv_location_singleTrip.setText(selectedTrip._city);
-                tv_date_singleTrip.setText(selectedTrip.get_date());
+                        tv_title_singleTrip.setText(selectedTrip.getTitle());
+                        tv_description_singleTrip.setText(selectedTrip.getDescription());
+                        tv_location_singleTrip.setText(selectedTrip._city);
+                        tv_date_singleTrip.setText(selectedTrip.get_date());
 
-            }
-        });
+                    }
+                });
 
         btn_joinTrip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 friends = selectedTrip.getFriends();
 
-//                db.collection("users").document(userId)
-//
-//                friends.add()
-//                selectedTrip.setFriends();
-//                db.collection("trips").document(selectedTrip.getTripId())
-//                        .update("_friends", )
+                db.collection("users").document(userId).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot documentSnapshot = task.getResult();
+                            if (documentSnapshot != null) {
+                                newUser = documentSnapshot.toObject(User.class);
+                                friends.add(newUser);
+                                selectedTrip.setFriends(friends);
+                                db.collection("trips").document(selectedTrip.getTripId())
+                                        .update("_friends", friends).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        finish();
+                                    }
+                                });
+                            }
+                        }
+                        Log.d(TAG, "Selected User: " + newUser.toString());
+                    }
+                });
+
+
             }
         });
     }
