@@ -1,0 +1,68 @@
+package com.example.hw7;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+public class ViewMyTripActivity extends AppCompatActivity {
+
+    public TextView tv_title_view_myTrip;
+    public TextView tv_description_view_myTrip;
+    public ImageView iv_deleteTrip;
+    public ImageView iv_chatTrip;
+    public Bundle extrasFromMyTrips;
+    // Access a Cloud Firestore instance from your Activity
+    public FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_view_my_trip);
+        setTitle("My Trip");
+
+        tv_title_view_myTrip = findViewById(R.id.tv_title_view_myTrip);
+        tv_description_view_myTrip = findViewById(R.id.tv_description_view_myTrip);
+        iv_deleteTrip = findViewById(R.id.iv_delete_myTrip);
+        iv_chatTrip = findViewById(R.id.iv_chat_myTrip);
+
+
+        extrasFromMyTrips = getIntent().getExtras().getBundle("bundleData");
+
+        final Trip selectedTrip = (Trip) extrasFromMyTrips.getSerializable("selectedTrip");
+
+        tv_title_view_myTrip.setText(selectedTrip.getTitle());
+        tv_description_view_myTrip.setText(selectedTrip.getDescription());
+
+        iv_deleteTrip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                db.collection("trips").document(selectedTrip.getTripId()).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        setResult(ViewMyTripActivity.RESULT_OK);
+                        finish();
+                    }
+                });
+            }
+        });
+
+        iv_chatTrip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intentToChat = new Intent(ViewMyTripActivity.this, ChatRoomActivity.class);
+                startActivity(intentToChat);
+            }
+        });
+    }
+}

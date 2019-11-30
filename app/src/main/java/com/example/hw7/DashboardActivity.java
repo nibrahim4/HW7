@@ -14,6 +14,7 @@ public class DashboardActivity extends AppCompatActivity {
     public Button btn_addTrip;
     public Button btn_viewTrips;
     public Button btn_editProfile;
+    public Button btn_myTrips;
     public Bundle extrasFromMain;
     public String TAG = "demo";
     @Override
@@ -63,6 +64,15 @@ public class DashboardActivity extends AppCompatActivity {
                 bundle.putString("userId", userId);
                 intentToEditProfile.putExtra("bundleData", bundle);
                 startActivity(intentToEditProfile);
+            }
+        });
+
+        btn_myTrips = findViewById(R.id.btn_myTrips);
+        btn_myTrips.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intentToViewTrip = new Intent(DashboardActivity.this, MyTripsActivity.class);
+                startActivity(intentToViewTrip);
             }
         });
     }
