@@ -76,6 +76,9 @@ public class ViewMyTripActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intentToChat = new Intent(ViewMyTripActivity.this, ChatRoomActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("selectedTrip", selectedTrip);
+                intentToChat.putExtra("bundleData", bundle);
                 startActivity(intentToChat);
             }
         });

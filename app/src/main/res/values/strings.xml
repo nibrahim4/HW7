@@ -49,4 +49,5 @@
     <string name="tv_date" />
     <string name="tv_location_join" />
     <string name="btn_uploadImage">Photos</string>
+    <string name="tv_message" />
 </resources>
