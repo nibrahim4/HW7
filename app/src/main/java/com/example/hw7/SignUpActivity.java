@@ -23,6 +23,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.api.LogDescriptor;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -62,8 +63,9 @@ public class SignUpActivity extends AppCompatActivity {
     public StorageReference storageReference = firebaseStorage.getReference();
     public String selectedAvatarFileName;
     public User newUser = new User();
-    public String url ;
+    public String url;
     public String selectedAvatarTagName;
+    public boolean isErrorThrown = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,7 +81,7 @@ public class SignUpActivity extends AppCompatActivity {
         rb_female = findViewById(R.id.rb_female);
         rb_male = findViewById(R.id.rb_male);
         btn_signUp = findViewById(R.id.btn_edit);
-        iv_selectAvatar =findViewById(R.id.iv_selectAvatar);
+        iv_selectAvatar = findViewById(R.id.iv_selectAvatar);
 
         // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
@@ -89,7 +91,7 @@ public class SignUpActivity extends AppCompatActivity {
             public void onClick(View view) {
 
                 Intent intentToSelectAvatar = new Intent(SignUpActivity.this, SelectAvatarActivity.class);
-                startActivityForResult(intentToSelectAvatar,REQ_CODE);
+                startActivityForResult(intentToSelectAvatar, REQ_CODE);
             }
 
         });
@@ -119,74 +121,108 @@ public class SignUpActivity extends AppCompatActivity {
                 password = et_newUser_password.getText().toString();
                 final String firstName = et_firstName.getText().toString();
                 final String lastName = et_lastName.getText().toString();
-
+                isErrorThrown = false;
 
                 Log.d(TAG, "email " + email);
                 Log.d(TAG, "password " + password);
-                mAuth.createUserWithEmailAndPassword(email, password)
-                        .addOnCompleteListener( new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                if (task.isSuccessful()) {
-                                    // Sign in success, update UI with the signed-in user's information
-                                    Log.d(TAG, "createUserWithEmail:success");
-                                    FirebaseUser user = mAuth.getCurrentUser();
-                                    userId = user.getUid();
-                                    Toast.makeText(SignUpActivity.this, "Sign up was successful.",
-                                            Toast.LENGTH_SHORT).show();
-                                    Log.d(TAG, "gender: " + selectedGender);
-                                    User newUser = new User(userId, firstName, lastName,email, selectedGender, null,null );
-                                    addUserToDb(newUser);
-                                } else {
-                                    // If sign in fails, display a message to the user.
-                                    Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                                    Toast.makeText(SignUpActivity.this, "Authentication failed.",
-                                            Toast.LENGTH_SHORT).show();
-                                }
+                Log.d(TAG, "selectedGender: " + selectedGender);
 
-                            }
-                        });
+                if (email.equals("") || email == null) {
+                    et_newUser_email.setError("Please enter an email address!");
+                    isErrorThrown = true;
+                } else if (password.equals("") || password == null) {
+                    et_newUser_password.setError("Please enter an password!");
+                    isErrorThrown = true;
+                } else if(firstName.equals("") || firstName == null) {
+                    et_firstName.setError("Please enter a first name!");
+                    isErrorThrown = true;
+                }else if(lastName.equals("") || lastName == null){
+                    et_lastName.setError("Please enter a last name!");
+                    isErrorThrown = true;
+                }else if(  selectedGender == null || selectedGender.equals("null")) {
+                    Toast.makeText(SignUpActivity.this, "Please select a gender!",
+                            Toast.LENGTH_SHORT).show();
+                    isErrorThrown = true;
+                }else if( selectedAvatarTagName == null|| selectedAvatarTagName.equals("")){
+                    Toast.makeText(SignUpActivity.this, "Please select an avatar!",
+                            Toast.LENGTH_SHORT).show();
+                    isErrorThrown = true;
+                }
+
+               if(!isErrorThrown){
+                    mAuth.createUserWithEmailAndPassword(email, password)
+                            .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<AuthResult> task) {
+                                    if (task.isSuccessful()) {
+                                        // Sign in success, update UI with the signed-in user's information
+                                        Log.d(TAG, "createUserWithEmail:success");
+                                        FirebaseUser user = mAuth.getCurrentUser();
+                                        userId = user.getUid();
+                                        Toast.makeText(SignUpActivity.this, "Sign up was successful.",
+                                                Toast.LENGTH_SHORT).show();
+                                        Log.d(TAG, "gender: " + selectedGender);
+                                        User newUser = new User(userId, firstName, lastName, email, selectedGender, null, null);
+                                        addUserToDb(newUser);
+                                    } else {
+                                        // If sign in fails, display a message to the user.
+                                        Log.w(TAG, "createUserWithEmail:failure", task.getException());
+                                        Toast.makeText(SignUpActivity.this, "Authentication failed.",
+                                                Toast.LENGTH_SHORT).show();
+                                    }
+
+                                }
+                            });
+
+                }
+
             }
         });
 
     }
 
-    public void addUserToDb(User newUser){
+    public void addUserToDb(User newUser) {
         Bitmap bMap = null;
-        switch(iv_selectAvatar.getTag().toString()){
-            case "avatar1":
-                bMap = BitmapFactory.decodeResource(getResources(),R.drawable.avatar_f_3 );
-                uploadImage(newUser, bMap);
-                break;
-            case "avatar2":
-                bMap = BitmapFactory.decodeResource(getResources(),R.drawable.avatar_f_2);
-                uploadImage(newUser, bMap);
-                break;
-            case "avatar3":
-                bMap = BitmapFactory.decodeResource(getResources(),R.drawable.avatar_f_1);
-                uploadImage(newUser, bMap);
-                break;
-            case "avatar4":
-                bMap = BitmapFactory.decodeResource(getResources(),R.drawable.avatar_m_1);
-                uploadImage(newUser, bMap);
-                break;
-            case "avatar5":
-                bMap = BitmapFactory.decodeResource(getResources(),R.drawable.avatar_m_2);
-                uploadImage(newUser, bMap);
-                break;
-            case "avatar6":
-                bMap = BitmapFactory.decodeResource(getResources(),R.drawable.avatar_m_3);
-                uploadImage(newUser, bMap);
-                break;
+        if(selectedAvatarTagName != null|| !selectedAvatarTagName.equals("")){
+            switch (selectedAvatarTagName) {
+                case "avatar1":
+                    bMap = BitmapFactory.decodeResource(getResources(), R.drawable.avatar_f_3);
+                    uploadImage(newUser, bMap);
+                    break;
+                case "avatar2":
+                    bMap = BitmapFactory.decodeResource(getResources(), R.drawable.avatar_f_2);
+                    uploadImage(newUser, bMap);
+                    break;
+                case "avatar3":
+                    bMap = BitmapFactory.decodeResource(getResources(), R.drawable.avatar_f_1);
+                    uploadImage(newUser, bMap);
+                    break;
+                case "avatar4":
+                    bMap = BitmapFactory.decodeResource(getResources(), R.drawable.avatar_m_1);
+                    uploadImage(newUser, bMap);
+                    break;
+                case "avatar5":
+                    bMap = BitmapFactory.decodeResource(getResources(), R.drawable.avatar_m_2);
+                    uploadImage(newUser, bMap);
+                    break;
+                case "avatar6":
+                    bMap = BitmapFactory.decodeResource(getResources(), R.drawable.avatar_m_3);
+                    uploadImage(newUser, bMap);
+                    break;
 
+            }
+
+            Intent intentToDashboard = new Intent(SignUpActivity.this, DashboardActivity.class);
+            Bundle bundle = new Bundle();
+            bundle.putString("userId", newUser.userId);
+            intentToDashboard.putExtra("bundleData", bundle);
+            startActivity(intentToDashboard);
+
+        }else{
+            Toast.makeText(this, "Please selected an avatar photo.", Toast.LENGTH_SHORT).show();
         }
 
 
-        Intent intentToDashboard = new Intent(SignUpActivity.this, DashboardActivity.class);
-        Bundle bundle = new Bundle();
-        bundle.putString("userId", newUser.userId);
-        intentToDashboard.putExtra("bundleData", bundle);
-        startActivity(intentToDashboard);
     }
 
     @Override
@@ -213,7 +249,7 @@ public class SignUpActivity extends AppCompatActivity {
                         iv_selectAvatar.setImageResource(R.drawable.avatar_m_3);
                     }
 
-                }else{
+                } else {
                     Toast.makeText(this, "No avatar was selected!", Toast.LENGTH_SHORT).show();
                 }
 
@@ -224,7 +260,7 @@ public class SignUpActivity extends AppCompatActivity {
     //UPLOAD IMAGE TO CLOUD
     private void uploadImage(final User newUser, Bitmap photoBitmap) {
 
-        final StorageReference avatarRepo = storageReference.child("avatars/" + userId +".png");
+        final StorageReference avatarRepo = storageReference.child("avatars/" + userId + ".png");
 
         newUser.storagePath = avatarRepo.getPath();
 
@@ -262,31 +298,58 @@ public class SignUpActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<Uri> task) {
                 if (task.isSuccessful()) {
 
-                    Map<String, Object> userMap = new HashMap<>();
-                    userMap.put("userId", newUser.userId);
-                    userMap.put("firstName", newUser.firstName);
-                    userMap.put("lastName", newUser.lastName);
-                    userMap.put("email", newUser.emailAddress);
-                    userMap.put("gender", newUser.gender);
-                    userMap.put("url", task.getResult().toString());
 
                     url = task.getResult().toString();
-                    Log.d(TAG, "Image Download URL" +  url);
+                    Log.d(TAG, "Image Download URL" + url);
 
-                    db.collection("users").document(userId)
-                            .set(userMap)
-                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void aVoid) {
+                    if (url.equals("") || url == null) {
+                        Toast.makeText(SignUpActivity.this, "Please select an avatar " +
+                                "for your profile. ", Toast.LENGTH_SHORT).show();
+                        isErrorThrown = true;
+                    } else if (newUser.firstName.equals("") || newUser.firstName == null) {
+                        et_firstName.setError("Please enter a first name!");
+                        isErrorThrown = true;
+                    } else if (newUser.lastName.equals("") || newUser.lastName == null) {
+                        et_lastName.setError("Please enter a last name!");
+                        isErrorThrown = true;
+                    } else if (newUser.emailAddress.equals("") || newUser.emailAddress == null) {
+                        et_lastName.setError("Please enter an email address!");
+                        isErrorThrown = true;
+                    } else if (newUser.gender.equals("") || newUser.gender == null) {
+                        Toast.makeText(SignUpActivity.this, "Please select a gender.",
+                                Toast.LENGTH_SHORT).show();
+                        isErrorThrown = true;
+                    } else if (et_newUser_password.getText().equals("") || et_newUser_password == null) {
+                        Toast.makeText(SignUpActivity.this, "Please enter a password.",
+                                Toast.LENGTH_SHORT).show();
+                        isErrorThrown = true;
+                    }
 
-                                }
-                            })
-                            .addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
+                    if (!isErrorThrown) {
+                        Map<String, Object> userMap = new HashMap<>();
+                        userMap.put("userId", newUser.userId);
+                        userMap.put("firstName", newUser.firstName);
+                        userMap.put("lastName", newUser.lastName);
+                        userMap.put("email", newUser.emailAddress);
+                        userMap.put("gender", newUser.gender);
+                        userMap.put("url", task.getResult().toString());
 
-                                }
-                            });
+                        db.collection("users").document(userId)
+                                .set(userMap)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+
+                                    }
+                                });
+                    }
+
 
                 }
             }
