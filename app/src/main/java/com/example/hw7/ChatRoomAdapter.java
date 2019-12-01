@@ -51,6 +51,8 @@ public class ChatRoomAdapter extends ArrayAdapter<Message> {
         Log.d(TAG, "message.imageUrl " + message.imageUrl );
 
         if(message.imageUrl != null){
+            TextView tv_message = convertView.findViewById(R.id.tv_message);
+            tv_message.setText(message.email + "   Date: " + message.date);
             iv_coverPhoto_trips.setVisibility(View.VISIBLE);
             Picasso.get().load(message.imageUrl).into(iv_coverPhoto_trips);
         }else{

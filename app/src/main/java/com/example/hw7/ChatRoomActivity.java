@@ -19,7 +19,9 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -36,7 +38,11 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Array;
@@ -56,7 +62,7 @@ public class ChatRoomActivity extends AppCompatActivity {
     DatabaseReference reference;
     public EditText et_message;
     public ListView lv_messages;
-    ArrayList<Message> messages;
+    ArrayList<Message> messages = new ArrayList<>();
     ChatRoomAdapter adapter;
     public Button btn_sendMessage;
     public FirebaseAuth mAuth;
@@ -71,6 +77,9 @@ public class ChatRoomActivity extends AppCompatActivity {
     // Access a Cloud Firestore instance from your Activity
     public FirebaseFirestore db = FirebaseFirestore.getInstance();
     public Trip selectedTrip;
+    public FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
+    public StorageReference storageReference = firebaseStorage.getReference();
+    public String imgMsgId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,7 +92,6 @@ public class ChatRoomActivity extends AppCompatActivity {
         btn_sendMessage = findViewById(R.id.btn_send);
         btn_cancel = findViewById(R.id.btn_cancel);
         btn_uploadImage = findViewById(R.id.btn_uploadImage);
-        messages = new ArrayList<>();
         adapter = new ChatRoomAdapter(this, R.layout.chat_item, messages);
         lv_messages.setAdapter(adapter);
 
@@ -101,7 +109,7 @@ public class ChatRoomActivity extends AppCompatActivity {
 
         selectedTrip = (Trip) extrasFromMyTrips.getSerializable("selectedTrip");
 
-        db.collection("chats").get()
+        db.collection("chats").orderBy("date", Query.Direction.DESCENDING).get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
@@ -128,6 +136,12 @@ public class ChatRoomActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             for (DocumentSnapshot document : task.getResult()) {
                                 itemsRef.document(document.getId()).delete();
+
+                                if(messages.get(i).imageUrl != null && ! messages.get(i).imageUrl.equals("")){
+                                    Log.d(TAG, "messages.get(i).messageId: "+ messages.get(i).messageId);
+                                    storageReference.child("chat").child(messages.get(i).messageId + ".png").delete();
+                                }
+
                                 messages.remove(i);
                                 adapter.notifyDataSetChanged();
                             }
@@ -195,6 +209,7 @@ public class ChatRoomActivity extends AppCompatActivity {
             Bitmap bitmap = null;
             try {
                 bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImage);
+                uploadImage(bitmap);
             } catch (FileNotFoundException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -203,5 +218,72 @@ public class ChatRoomActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
+    }
+
+    //UPLOAD IMAGE TO CLOUD
+    private void uploadImage(Bitmap photoBitmap) {
+
+        final Message imgMsg = new Message();
+
+        imgMsg.email = userEmail;
+        imgMsg.messageId = UUID.randomUUID().toString();
+        imgMsg.tripId = selectedTrip.getTripId();
+        Date imgDate = new Date();
+        imgMsg.date = imgDate.toString();
+
+        imgMsgId = imgMsg.messageId;
+
+
+
+        final StorageReference avatarRepo = storageReference.child("chat/" + imgMsgId + ".png");
+
+//        Converting the Bitmap into a bytearrayOutputstream....
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        photoBitmap.compress(Bitmap.CompressFormat.PNG, 50, baos);
+        byte[] data = baos.toByteArray();
+
+        UploadTask uploadTask = avatarRepo.putBytes(data);
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.e(TAG, "onFailure: " + e.getMessage());
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                Log.d(TAG, "onSuccess: " + "Image Uploaded!!!");
+            }
+        });
+
+
+        Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+            @Override
+            public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+//                return null;
+                if (!task.isSuccessful()) {
+                    throw task.getException();
+                }
+
+                return avatarRepo.getDownloadUrl();
+            }
+        }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+            @Override
+            public void onComplete(@NonNull Task<Uri> task) {
+                if (task.isSuccessful()) {
+
+
+                 //   url = task.getResult().toString();
+                   // Log.d(TAG, "Image Download URL" + url);
+
+
+
+                    imgMsg.imageUrl = task.getResult().toString();
+                    db.collection("chats").add(imgMsg);
+                    messages.add(imgMsg);
+                    adapter.notifyDataSetChanged();
+                }
+            }
+        });
+
     }
 }
