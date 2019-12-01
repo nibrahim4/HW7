@@ -21,6 +21,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -47,6 +48,8 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -161,23 +164,45 @@ public class AddTripActivity extends AppCompatActivity implements MapFragment.On
             public void onClick(View view) {
                 String dateValue = et_date.getText().toString();
 
-
+                boolean incorrectDate = false;
+                try {
+                    new SimpleDateFormat("MM/dd/yyyy").parse(dateValue);
+                     incorrectDate = false;
+                } catch (ParseException e) {
+                    incorrectDate = true;
+                }
 
                 Log.d(TAG, "coverPhotoUrl: " + coverPhotoUrl);
-                Trip trip = new Trip(userId,
-                        tripId,
-                        et_title.getText().toString(),
-                        et_description.getText().toString(),
-                        selectedUsers,
-                        dateValue,
-                        selectedCity,
-                        String.valueOf(latitude) ,
-                        String.valueOf(longitude),
-                        coverPhotoUrl);
+                Log.d(TAG, "et_date: " + et_date.getText());
+                if(et_title.getText().toString().equals("")){
+                    et_title.setError("Please enter a valid title!");
+                }else if(et_description.getText().toString().equals("")) {
+                    et_description.setError("Please enter a valid description!");
+                }else if(selectedCity == null) {
+                    Toast.makeText(AddTripActivity.this, "Please select a valid city" +
+                            " for you trip!", Toast.LENGTH_SHORT).show();
+                }else if(et_date.getText().toString().equals("") || incorrectDate) {
+                    et_date.setError("Please enter a valid date MM/DD/YYYY");
+                }else if(coverPhotoUrl == null) {
+                    Toast.makeText(AddTripActivity.this, "Please select a cover photo.", Toast.LENGTH_SHORT).show();
+                }else{
 
-                db.collection("trips").document(tripId).set(trip);
+                    Trip trip = new Trip(userId,
+                            tripId,
+                            et_title.getText().toString(),
+                            et_description.getText().toString(),
+                            selectedUsers,
+                            dateValue,
+                            selectedCity,
+                            String.valueOf(latitude) ,
+                            String.valueOf(longitude),
+                            coverPhotoUrl);
 
-                finish();
+                    db.collection("trips").document(tripId).set(trip);
+
+                    finish();
+                }
+
             }
 
         });

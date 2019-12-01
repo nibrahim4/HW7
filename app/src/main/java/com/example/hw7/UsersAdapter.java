@@ -16,6 +16,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.ListResult;
 import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -52,10 +53,8 @@ public class UsersAdapter extends ArrayAdapter<User> {
         tv_email.setText(user.emailAddress);
 
         ImageView iv_avatar = convertView.findViewById(R.id.iv_user_avatar);
+        Picasso.get().load(user.url).into(iv_avatar);
 
-        Log.d(TAG, "getView: " + user.url);
-        StorageReference sf = storageReference.child("avatars").child(user.userId + ".png");
-        //sf.
 
         return convertView;
     }

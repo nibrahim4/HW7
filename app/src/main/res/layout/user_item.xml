@@ -11,7 +11,9 @@
         android:layout_alignParentTop="true"
         android:layout_marginStart="29dp"
         android:layout_marginTop="42dp"
-        android:text="@string/tv_userFirstName" />
+        android:text="@string/tv_userFirstName"
+        android:textSize="18sp"
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/tv_user_lastName"
@@ -21,7 +23,9 @@
         android:layout_alignParentEnd="true"
         android:layout_marginTop="46dp"
         android:layout_marginEnd="13dp"
-        android:text="@string/tv_user_lastName" />
+        android:text="@string/tv_user_lastName"
+        android:textSize="18sp"
+        android:textStyle="bold" />
 
     <ImageView
         android:id="@+id/iv_user_avatar"
@@ -41,7 +45,9 @@
         android:layout_alignParentEnd="true"
         android:layout_marginTop="25dp"
         android:layout_marginEnd="19dp"
-        android:text="@string/tv_user_gender" />
+        android:text="@string/tv_user_gender"
+        android:textSize="18sp"
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/tv_user_email"
@@ -51,5 +57,7 @@
         android:layout_alignParentEnd="true"
         android:layout_marginTop="15dp"
         android:layout_marginEnd="22dp"
-        android:text="@string/tv_user_email" />
+        android:text="@string/tv_user_email"
+        android:textSize="18sp"
+        android:textStyle="bold" />
 </RelativeLayout>

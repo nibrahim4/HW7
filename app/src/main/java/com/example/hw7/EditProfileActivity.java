@@ -102,18 +102,21 @@ public class EditProfileActivity extends AppCompatActivity {
                         et_firstName_edit.setText(user.getFirstName());
                         et_lastName_edit.setText(user.getLastName());
                         et_email_edit.setText(user.getEmailAddress());
+                        Log.d(TAG, "user.getGender(): " + user.getGender());
+                        if(user.getGender() != null ) {
 
-                        switch (user.getGender()) {
-                            case "female":
-                                rb_female.setChecked(true);
-                                break;
-                            case "male":
-                                rb_male.setChecked(true);
-                                break;
-                            default:
-                                rb_male.setChecked(false);
-                                rb_female.setChecked(false);
-                                break;
+                            switch (user.getGender()) {
+                                case "female":
+                                    rb_female.setChecked(true);
+                                    break;
+                                case "male":
+                                    rb_male.setChecked(true);
+                                    break;
+                                default:
+                                    rb_male.setChecked(false);
+                                    rb_female.setChecked(false);
+                                    break;
+                            }
                         }
                         Log.d(TAG, "url: " + user.getUrl());
                         Picasso.get().load(user.getUrl()).into(iv_selectAvatar_edit);
@@ -127,10 +130,31 @@ public class EditProfileActivity extends AppCompatActivity {
             }
         });
 
+        rg_gender_edit.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                Log.d(TAG, "getCheckedRadioButtonId: " + radioGroup.getCheckedRadioButtonId());
+                switch (radioGroup.getCheckedRadioButtonId()) {
+                    case R.id.rb_female_edit:
+                        Log.d(TAG, "onCheckedChanged: " + "female");
+                        db.collection("users").document(userId).update("gender", "female");
+                        break;
+                    case R.id.rb_male_edit:
+                        db.collection("users").document(userId).update("gender", "male");
+                        break;
+                    default:
+                        Toast.makeText(EditProfileActivity.this, "Please select a gender.", Toast.LENGTH_SHORT).show();
+                        break;
+                }
+            }
+        });
+
         btn_updateProfile.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View view) {
+                final boolean[] isErrorThrown = {false};
+
                 Log.d(TAG, "current user: " + userId);
                 if (!et_email_edit.getText().toString().equals("") || et_email_edit.getText() != null) {
                     final Task updateEmailTask = FirebaseAuth.getInstance().getCurrentUser().updateEmail(et_email_edit.getText().toString());
@@ -143,34 +167,37 @@ public class EditProfileActivity extends AppCompatActivity {
                             }
                         }
                     });
+                } else {
+                    isErrorThrown[0] = true;
+                    et_email_edit.setError("Please enter a valid email address.");
                 }
                 Log.d(TAG, "password: " + et_password_edit.getText().toString());
                 if (!et_password_edit.getText().toString().equals("") && et_password_edit.getText() != null) {
                     Task updatePasswordTask = FirebaseAuth.getInstance().getCurrentUser().updatePassword(et_password_edit.getText().toString());
+                } else {
+                    isErrorThrown[0] = true;
+                    et_password_edit.setError("Please enter a valid password.");
+                }
+
+                if (!et_firstName_edit.getText().toString().equals("") || et_firstName_edit.getText().toString() != null) {
+                    db.collection("users").document(userId).update("firstName", et_firstName_edit.getText().toString());
+
+                } else {
+                    isErrorThrown[0] = true;
+                    et_firstName_edit.setError("Please enter a first name.");
+                }
+
+                if (et_lastName_edit.getText().toString().equals("") || et_lastName_edit.getText() != null) {
+                    db.collection("users").document(userId).update("lastName", et_lastName_edit.getText().toString());
+
+                } else {
+                    isErrorThrown[0] = true;
+                    et_lastName_edit.setError("Please enter a last name.");
                 }
 
 
-                db.collection("users").document(userId).update("firstName", et_firstName_edit.getText().toString());
-                db.collection("users").document(userId).update("lastName", et_lastName_edit.getText().toString());
-
-                rg_gender_edit.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-                    @Override
-                    public void onCheckedChanged(RadioGroup radioGroup, int i) {
-                        switch (radioGroup.getCheckedRadioButtonId()) {
-                            case R.id.rb_female_edit:
-                                db.collection("users").document(userId).update("gender", "female");
-                                break;
-                            case R.id.rb_male_edit:
-                                db.collection("users").document(userId).update("gender", "male");
-                                break;
-                            default:
-                                break;
-                        }
-                    }
-                });
-
                 Bitmap bMap = null;
-                if(selectedAvatarTagName != null && !selectedAvatarTagName.equals("")) {
+                if (selectedAvatarTagName != null && !selectedAvatarTagName.equals("")) {
                     switch (selectedAvatarTagName) {
                         case "avatar1":
                             bMap = BitmapFactory.decodeResource(getResources(), R.drawable.avatar_f_3);
@@ -199,8 +226,12 @@ public class EditProfileActivity extends AppCompatActivity {
 
                     }
 
-            }
-                finish();
+                }
+
+                if(!isErrorThrown[0]){
+                    finish();
+                }
+
             }
 
         });
@@ -246,9 +277,9 @@ public class EditProfileActivity extends AppCompatActivity {
         }).addOnCompleteListener(new OnCompleteListener<Uri>() {
             @Override
             public void onComplete(@NonNull Task<Uri> task) {
-            if (task.isSuccessful()) {
-                db.collection("users").document(userId).update("url", task.getResult().toString());
-            }
+                if (task.isSuccessful()) {
+                    db.collection("users").document(userId).update("url", task.getResult().toString());
+                }
             }
         });
 

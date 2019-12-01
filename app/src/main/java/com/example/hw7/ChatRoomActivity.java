@@ -271,12 +271,6 @@ public class ChatRoomActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<Uri> task) {
                 if (task.isSuccessful()) {
 
-
-                 //   url = task.getResult().toString();
-                   // Log.d(TAG, "Image Download URL" + url);
-
-
-
                     imgMsg.imageUrl = task.getResult().toString();
                     db.collection("chats").add(imgMsg);
                     messages.add(imgMsg);
