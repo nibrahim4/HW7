@@ -83,6 +83,7 @@ public class AddTripActivity extends AppCompatActivity implements MapFragment.On
     public String coverPhotoUrl;
     public int selectedCoverPhoto;
     public Bitmap bMap;
+    public boolean isCoverPhotoUpload = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -163,7 +164,7 @@ public class AddTripActivity extends AppCompatActivity implements MapFragment.On
             @Override
             public void onClick(View view) {
                 String dateValue = et_date.getText().toString();
-
+                boolean isErrorThrown = false;
                 boolean incorrectDate = false;
                 try {
                     new SimpleDateFormat("MM/dd/yyyy").parse(dateValue);
@@ -176,17 +177,24 @@ public class AddTripActivity extends AppCompatActivity implements MapFragment.On
                 Log.d(TAG, "et_date: " + et_date.getText());
                 if(et_title.getText().toString().equals("")){
                     et_title.setError("Please enter a valid title!");
+                    isErrorThrown = true;
                 }else if(et_description.getText().toString().equals("")) {
                     et_description.setError("Please enter a valid description!");
+                    isErrorThrown = true;
                 }else if(selectedCity == null) {
+                    isErrorThrown = true;
                     Toast.makeText(AddTripActivity.this, "Please select a valid city" +
                             " for you trip!", Toast.LENGTH_SHORT).show();
                 }else if(et_date.getText().toString().equals("") || incorrectDate) {
+                    isErrorThrown = true;
                     et_date.setError("Please enter a valid date MM/DD/YYYY");
-                }else if(coverPhotoUrl == null) {
-                    Toast.makeText(AddTripActivity.this, "Please select a cover photo.", Toast.LENGTH_SHORT).show();
-                }else{
+                } else if(!isCoverPhotoUpload) {
+                   Toast.makeText(AddTripActivity.this, "Please select a cover photo.",
+                           Toast.LENGTH_SHORT).show();
+                }
+                //{
 
+                if(isCoverPhotoUpload && !isErrorThrown) {
                     Trip trip = new Trip(userId,
                             tripId,
                             et_title.getText().toString(),
@@ -194,15 +202,15 @@ public class AddTripActivity extends AppCompatActivity implements MapFragment.On
                             selectedUsers,
                             dateValue,
                             selectedCity,
-                            String.valueOf(latitude) ,
+                            String.valueOf(latitude),
                             String.valueOf(longitude),
                             coverPhotoUrl);
 
                     db.collection("trips").document(tripId).set(trip);
 
                     finish();
+                    //  }
                 }
-
             }
 
         });
@@ -324,7 +332,10 @@ public class AddTripActivity extends AppCompatActivity implements MapFragment.On
                 if (task.isSuccessful()) {
                     Log.d(TAG, "task.getResult().toString(): " + task.getResult().toString());
                     coverPhotoUrl = task.getResult().toString();
-
+                    isCoverPhotoUpload = true;
+                }else{
+                    Toast.makeText(AddTripActivity.this, "Please upload a cover photo!",
+                            Toast.LENGTH_SHORT).show();
                 }
             }
         });

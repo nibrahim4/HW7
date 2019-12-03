@@ -33,14 +33,19 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+
+import org.w3c.dom.Document;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
@@ -109,19 +114,42 @@ public class ChatRoomActivity extends AppCompatActivity {
 
         selectedTrip = (Trip) extrasFromMyTrips.getSerializable("selectedTrip");
 
-        db.collection("chats").orderBy("date", Query.Direction.DESCENDING).get()
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                    @Override
-                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        for (QueryDocumentSnapshot qd : queryDocumentSnapshots) {
-                            if (selectedTrip.getTripId().equals(qd.toObject(Message.class).tripId)) {
-                                messages.add(qd.toObject(Message.class));
-                            }
-                        }
+//        db.collection("chats").orderBy("date", Query.Direction.DESCENDING).get()
+//                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+//                    @Override
+//                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+//                        for (QueryDocumentSnapshot qd : queryDocumentSnapshots) {
+//                            if (selectedTrip.getTripId().equals(qd.toObject(Message.class).tripId)) {
+//                                messages.add(qd.toObject(Message.class));
+//                            }
+//                        }
+//
+//                        adapter.notifyDataSetChanged();
+//                    }
+//                });
 
-                        adapter.notifyDataSetChanged();
+        db.collection("chats").orderBy("date").addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                if (queryDocumentSnapshots != null ) {
+
+                    messages.clear();
+
+                    for (int i =0; i<queryDocumentSnapshots.size(); i++) {
+                        if (selectedTrip.getTripId().equals(queryDocumentSnapshots.getDocuments().get(i).toObject(Message.class).tripId)) {
+                            messages.add(queryDocumentSnapshots.getDocuments().get(i).toObject(Message.class));
+                            Log.d(TAG, "Current data: " + queryDocumentSnapshots.getDocuments().get(i).toObject(Message.class));
+
+                        }
                     }
-                });
+                    adapter.notifyDataSetChanged();
+                    et_message.setText(null);
+
+                } else {
+                    Log.d(TAG, "Current data: null");
+                }
+            }
+        });
 
         lv_messages.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -189,13 +217,18 @@ public class ChatRoomActivity extends AppCompatActivity {
         message.tripId = selectedTrip.getTripId();
         Date date = new Date();
         message.date = date.toString();
-        messages.add(message);
+
 
         //hashMap.put(message.messageId, messages);
-        db.collection("chats").add(message);
+        db.collection("chats").add(message).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+            @Override
+            public void onSuccess(DocumentReference documentReference) {
 
-        adapter.notifyDataSetChanged();
-        et_message.setText(null);
+            }
+        });
+
+
+
     }
 
     @Override
