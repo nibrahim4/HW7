@@ -5,6 +5,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -128,7 +130,7 @@ public class ChatRoomActivity extends AppCompatActivity {
 //                    }
 //                });
 
-        db.collection("chats").orderBy("date").addSnapshotListener(new EventListener<QuerySnapshot>() {
+        db.collection("chats").orderBy("date", Query.Direction.DESCENDING).addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
                 if (queryDocumentSnapshots != null ) {
@@ -155,29 +157,44 @@ public class ChatRoomActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, final int i, long l) {
 
-                final CollectionReference itemsRef = db.collection("chats");
+                new AlertDialog.Builder(ChatRoomActivity.this)
+                        .setTitle("Delete a message")
+                        .setMessage("Are you sure you want to delete this message")
 
-                Query query = itemsRef.whereEqualTo("messageId", messages.get(i).messageId);
-                query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (DocumentSnapshot document : task.getResult()) {
-                                itemsRef.document(document.getId()).delete();
+                        // Specifying a listener allows you to take an action before dismissing the dialog.
+                        // The dialog is automatically dismissed when a dialog button is clicked.
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                final CollectionReference itemsRef = db.collection("chats");
 
-                                if(messages.get(i).imageUrl != null && ! messages.get(i).imageUrl.equals("")){
-                                    Log.d(TAG, "messages.get(i).messageId: "+ messages.get(i).messageId);
-                                    storageReference.child("chat").child(messages.get(i).messageId + ".png").delete();
-                                }
+                                Query query = itemsRef.whereEqualTo("messageId", messages.get(i).messageId);
+                                query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                        if (task.isSuccessful()) {
+                                            for (DocumentSnapshot document : task.getResult()) {
+                                                itemsRef.document(document.getId()).delete();
 
-                                messages.remove(i);
-                                adapter.notifyDataSetChanged();
+                                                if(messages.get(i).imageUrl != null && ! messages.get(i).imageUrl.equals("")){
+                                                    Log.d(TAG, "messages.get(i).messageId: "+ messages.get(i).messageId);
+                                                    storageReference.child("chat").child(messages.get(i).messageId + ".png").delete();
+                                                }
+
+                                                messages.remove(i);
+                                                adapter.notifyDataSetChanged();
+                                            }
+                                        } else {
+                                            Log.d(TAG, "Error getting documents: ", task.getException());
+                                        }
+                                    }
+                                });
                             }
-                        } else {
-                            Log.d(TAG, "Error getting documents: ", task.getException());
-                        }
-                    }
-                });
+                        })
+
+                        // A null listener allows the button to dismiss the dialog and take no further action.
+                        .setNegativeButton(android.R.string.no, null)
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .show();
             }
         });
 
